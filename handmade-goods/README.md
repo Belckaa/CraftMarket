@@ -1,16 +1,30 @@
-# React + Vite
+# CraftMarket
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Наскрізний проєкт з дисципліни «Веб-дизайн та веб-програмування (React)».
 
-Currently, two official plugins are available:
+## Лабораторна робота №2. Компонент картки товару (ProductCard)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Контракт props компонента `ProductCard`
 
-## React Compiler
+Компонент приймає наступні пропси:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Назва | Тип | Обов'язковий | За замовчуванням | Опис |
+| :--- | :--- | :--- | :--- | :--- |
+| `name` | `string` | Так | — | Назва товару |
+| `price` | `number` | Так | — | Ціна товару в гривнях |
+| `image` | `string` | Ні | `placeholder.svg` | URL-адреса зображення товару |
+| `category` | `string` | Так | — | Категорія товару |
+| `inStock` | `boolean` | Ні | `true` | Ознака наявності товару |
+| `onSale` | `boolean` | Ні | `false` | Ознака того, що товар на розпродажі (відображається бейдж для категорії "Кераміка") |
 
-## Expanding the Oxlint configuration
+### Використання
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```jsx
+import ProductCard from '@/components/ProductCard/ProductCard'
+
+<ProductCard 
+  name="Ваза керамічна" 
+  price={450} 
+  category="Кераміка" 
+  onSale={true} 
+/>

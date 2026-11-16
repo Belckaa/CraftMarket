@@ -134,3 +134,35 @@ p {
   max-width: 620px;
   color: var(--text-secondary);
 }
+
+/* Catalog Grid Styles */
+.catalog-header {
+  margin-bottom: 24px;
+}
+
+.catalog-header h2 {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+/* Catalog Grid Styles */
+.catalog-header {
+  margin-bottom: 24px;
+}
+
+.catalog-header h2 {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
