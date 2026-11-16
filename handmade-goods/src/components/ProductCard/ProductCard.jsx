@@ -11,11 +11,11 @@ const PLACEHOLDER_IMAGE = new URL('../../assets/product-placeholder.svg', import
  * @param {string} props.category
  * @param {boolean} [props.inStock=true]
  * @param {boolean} [props.onSale=false]
+ * @param {string} [props.highlightQuery='']
  */
-function ProductCard({ name, price, image, category, inStock = true, onSale = false }) {
+function ProductCard({ name, price, image, category, inStock = true, onSale = false, highlightQuery = '' }) {
   const imageSrc = image || PLACEHOLDER_IMAGE
 
-  // Логіка пріоритету бейджів (Варіант 6)
   const renderBadge = () => {
     if (!inStock) {
       return <span className="product-card__badge product-card__badge--out">Немає в наявності</span>
@@ -26,6 +26,25 @@ function ProductCard({ name, price, image, category, inStock = true, onSale = fa
     return null
   }
 
+  // Варіант 11: Функція підсвічування збігу
+  const renderHighlightedName = () => {
+    if (!highlightQuery.trim()) return name
+
+    // Екрануємо спецсимволи для RegExp
+    const escapedQuery = highlightQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const parts = name.split(new RegExp(`(${escapedQuery})`, 'gi'))
+
+    return parts.map((part, index) =>
+      part.toLowerCase() === highlightQuery.toLowerCase() ? (
+        <mark key={index} className="product-card__highlight">
+          {part}
+        </mark>
+      ) : (
+        part
+      ),
+    )
+  }
+
   return (
     <article className="product-card">
       <div className="product-card__image-wrapper">
@@ -34,7 +53,7 @@ function ProductCard({ name, price, image, category, inStock = true, onSale = fa
       </div>
       <div className="product-card__content">
         <p className="product-card__category">{category}</p>
-        <h3 className="product-card__name">{name}</h3>
+        <h3 className="product-card__name">{renderHighlightedName()}</h3>
         <p className="product-card__price">{price.toLocaleString('uk-UA')} ₴</p>
       </div>
     </article>
@@ -48,6 +67,7 @@ ProductCard.propTypes = {
   category: PropTypes.string.isRequired,
   inStock: PropTypes.bool,
   onSale: PropTypes.bool,
+  highlightQuery: PropTypes.string,
 }
 
 export default ProductCard
