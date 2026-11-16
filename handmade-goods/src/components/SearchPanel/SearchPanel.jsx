@@ -9,9 +9,10 @@ function SearchPanel({
   minPrice, 
   onMinPriceChange, 
   maxPrice, 
-  onMaxPriceChange 
+  onMaxPriceChange,
+  sortBy,
+  onSortChange
 }) {
-  // Варіант 6: Перевірка на некоректний діапазон
   const isPriceInvalid = minPrice && maxPrice && Number(minPrice) > Number(maxPrice)
 
   return (
@@ -72,6 +73,23 @@ function SearchPanel({
           <p className="search-panel__error">Мін. ціна не може бути більшою за макс.</p>
         )}
       </div>
+
+      <div className="search-panel__field">
+        <label htmlFor="catalog-sort" className="search-panel__label">
+          Сортування
+        </label>
+        <select
+          id="catalog-sort"
+          className="search-panel__select"
+          value={sortBy}
+          onChange={(e) => onSortChange(e.target.value)}
+        >
+          <option value="default">За замовчуванням</option>
+          <option value="name-asc">Назва (А-Я)</option>
+          <option value="price-asc">Ціна (від дешевих)</option>
+          <option value="price-desc">Ціна (від дорогих)</option>
+        </select>
+      </div>
     </div>
   )
 }
@@ -85,6 +103,8 @@ SearchPanel.propTypes = {
   onMinPriceChange: PropTypes.func.isRequired,
   maxPrice: PropTypes.string.isRequired,
   onMaxPriceChange: PropTypes.func.isRequired,
+  sortBy: PropTypes.string.isRequired,
+  onSortChange: PropTypes.func.isRequired,
 }
 
 export default SearchPanel

@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import SearchPanel from '../components/SearchPanel/SearchPanel'
-import ProductCard from '../components/ProductCard/ProductCard'
+import ProductList from '../components/ProductList/ProductList'
 import { mockProducts } from '../data/mockProducts'
 import './CatalogPage.css'
 
@@ -9,26 +9,48 @@ function CatalogPage() {
   const [category, setCategory] = useState('all')
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
+  const [sortBy, setSortBy] = useState('default')
 
-  // Логіка фільтрації (Варіанти 1, 6)
-  const filteredProducts = mockProducts.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = category === 'all' || product.category === category
+  // Стан для демонстрації видалення (Крок 5)
+  const [demoProducts, setDemoProducts] = useState(mockProducts)
 
-    let matchesPrice = true
-    if (minPrice !== '' || maxPrice !== '') {
-      const min = minPrice === '' ? 0 : Number(minPrice)
-      const max = maxPrice === '' ? Infinity : Number(maxPrice)
-      
-      // Варіант 6: Обробка випадку, коли мін > макс (автоматично міняємо місцями)
-      const actualMin = Math.min(min, max)
-      const actualMax = Math.max(min, max)
-      
-      matchesPrice = product.price >= actualMin && product.price <= actualMax
+  // Варіант 11: Спочатку фільтруємо, потім сортуємо (у useMemo)
+  const filteredAndSortedProducts = useMemo(() => {
+    // 1. Фільтрація
+    let result = demoProducts.filter((product) => {
+      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesCategory = category === 'all' || product.category === category
+
+      let matchesPrice = true
+      if (minPrice !== '' || maxPrice !== '') {
+        const min = minPrice === '' ? 0 : Number(minPrice)
+        const max = maxPrice === '' ? Infinity : Number(maxPrice)
+        const actualMin = Math.min(min, max)
+        const actualMax = Math.max(min, max)
+        matchesPrice = product.price >= actualMin && product.price <= actualMax
+      }
+
+      return matchesSearch && matchesCategory && matchesPrice
+    })
+
+    // 2. Сортування (Варіанти 1 та 6)
+    if (sortBy === 'name-asc') {
+      result.sort((a, b) => a.name.localeCompare(b.name, 'uk'))
+    } else if (sortBy === 'price-asc') {
+      // Варіант 6: Якщо ціни рівні, сортуємо за назвою
+      result.sort((a, b) => a.price - b.price || a.name.localeCompare(b.name, 'uk'))
+    } else if (sortBy === 'price-desc') {
+      result.sort((a, b) => b.price - a.price || a.name.localeCompare(b.name, 'uk'))
     }
 
-    return matchesSearch && matchesCategory && matchesPrice
-  })
+    // Додаємо highlightQuery до кожного об'єкта для ProductCard
+    return result.map(p => ({ ...p, highlightQuery: searchQuery }))
+  }, [demoProducts, searchQuery, category, minPrice, maxPrice, sortBy])
+
+  // Функція для демонстрації Кроку 5
+  const handleRemoveFirst = () => {
+    setDemoProducts((prev) => prev.slice(1))
+  }
 
   return (
     <div className="catalog-page">
@@ -41,32 +63,26 @@ function CatalogPage() {
         onMinPriceChange={setMinPrice}
         maxPrice={maxPrice}
         onMaxPriceChange={setMaxPrice}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
       />
 
       <div className="catalog-page__header">
         <h2>Каталог товарів</h2>
-        <p className="catalog-page__count">Знайдено товарів: {filteredProducts.length}</p>
+        <p className="catalog-page__count">Знайдено товарів: {filteredAndSortedProducts.length}</p>
       </div>
 
-      {filteredProducts.length === 0 ? (
-        <div className="catalog-page__empty">
-          <p>
-            За запитом «{searchQuery}» нічого не знайдено.
-            {category !== 'all' && ' Спробуйте змінити категорію.'}
-          </p>
-          <p className="catalog-page__empty-hint">Спробуйте інше формулювання або скиньте фільтри.</p>
-        </div>
-      ) : (
-        <div className="catalog-page__grid">
-          {filteredProducts.map((product) => (
-            <ProductCard 
-              key={product.id} 
-              {...product} 
-              highlightQuery={searchQuery}
-            />
-          ))}
-        </div>
-      )}
+      {/* Кнопка для демонстрації Кроку 5 (прибрати після звіту) */}
+      <div style={{ marginBottom: '20px' }}>
+        <button 
+          onClick={handleRemoveFirst}
+          style={{ padding: '8px 16px', background: 'var(--danger)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+        >
+          [Демонстрація] Видалити перший товар
+        </button>
+      </div>
+
+      <ProductList products={filteredAndSortedProducts} />
     </div>
   )
 }
