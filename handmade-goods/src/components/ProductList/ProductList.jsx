@@ -3,7 +3,6 @@ import ProductCard from '../ProductCard/ProductCard'
 import styles from './ProductList.module.css'
 
 function ProductList({ products }) {
-  // Крок 4: Обробка порожнього результату
   if (products.length === 0) {
     return (
       <div className={styles.empty}>
@@ -15,11 +14,10 @@ function ProductList({ products }) {
 
   return (
     <div className={styles.grid}>
-      {/* Крок 3: Використання стабільного key={product.id} */}
       {products.map((product) => (
         <ProductCard
           key={product.id}
-          name={product.name} // Використовуємо name, як у попередніх лабах
+          name={product.name}
           price={product.price}
           image={product.image}
           category={product.category}
