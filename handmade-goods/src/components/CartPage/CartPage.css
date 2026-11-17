@@ -1,4 +1,7 @@
 .cart-panel {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius);

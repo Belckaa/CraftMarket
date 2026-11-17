@@ -1,8 +1,16 @@
 /* Загальний каркас застосунку CraftMarket */
 
+.app__catalog {
+  min-width: 0;
+}
+
+.app__cart {
+  min-width: 0;
+}
+
 .app__layout {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: minmax(0, 1fr) 340px;
   gap: 32px;
   align-items: start;
 }
@@ -16,7 +24,15 @@
 }
 
 @media (max-width: 1024px) {
-  .app__layout {
+  .app__catalog {
+  min-width: 0;
+}
+
+.app__cart {
+  min-width: 0;
+}
+
+.app__layout {
     grid-template-columns: 1fr;
   }
 }

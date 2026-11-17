@@ -1,33 +1,37 @@
 .cart-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 0;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  gap: 8px 12px;
+  padding: 16px 0;
   border-bottom: 1px solid var(--border);
-  min-width: 0;
 }
 
 .cart-item__image {
-  width: 64px;
-  height: 64px;
+  grid-column: 1 / 2;
+  grid-row: 1 / 3;
+  width: 56px;
+  height: 56px;
   object-fit: cover;
   border-radius: var(--radius-sm);
   background: var(--bg-hover);
 }
 
 .cart-item__info {
-  flex: 1 1 0;
+  grid-column: 2 / 3;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   min-width: 0;
 }
 
 .cart-item__title {
   font-size: 13px;
   font-weight: 500;
-  margin-bottom: 4px;
+  line-height: 1.4;
   color: var(--text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: break-word;
 }
 
 .cart-item__unit {
@@ -36,24 +40,31 @@
 }
 
 .cart-item__controls {
+  grid-column: 2 / 3;
+  grid-row: 2;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 2px;
+  justify-self: start;
+  align-self: end;
 }
 
 .cart-item__controls button {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border: none;
   background: transparent;
   color: var(--text);
   font-size: 16px;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cart-item__controls button:hover {
@@ -61,28 +72,34 @@
 }
 
 .cart-item__qty {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  min-width: 20px;
+  min-width: 16px;
   text-align: center;
 }
 
 .cart-item__subtotal {
+  grid-column: 3 / 4;
+  grid-row: 2;
   font-weight: 600;
-  font-size: 13px;
-  min-width: 60px;
-  text-align: right;
-  white-space: nowrap;
+  font-size: 14px;
+  align-self: end;
+  justify-self: end;
+  margin-bottom: 4px;
 }
 
 .cart-item__remove {
+  grid-column: 3 / 4;
+  grid-row: 1;
+  justify-self: end;
+  align-self: start;
   background: none;
   border: none;
   color: var(--danger);
-  font-size: 18px;
+  font-size: 20px;
+  line-height: 1;
   cursor: pointer;
   padding: 0 4px;
-  flex-shrink: 0;
 }
 
 .cart-item__remove:hover {

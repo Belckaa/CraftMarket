@@ -5,10 +5,13 @@
 .promo-form__input-group {
   display: flex;
   gap: 8px;
+  width: 100%;
 }
 
 .promo-form__input {
-  flex-grow: 1;
+  flex: 1 1 0%;
+  min-width: 0;
+  width: 100%;
   padding: 8px 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -27,6 +30,7 @@
 }
 
 .promo-form__submit {
+  flex-shrink: 0;
   padding: 8px 16px;
   background: var(--bg-hover);
   color: var(--text);
