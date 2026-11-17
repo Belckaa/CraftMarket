@@ -8,23 +8,25 @@ export default function CartItem({ item, onQuantityChange, onRemove }) {
   const formatPrice = useFormatPrice()
 
   return (
-    <li className="grid grid-cols-[56px_minmax(0,1fr)_auto] grid-rows-[auto_auto] gap-x-3 gap-y-2 border-b border-line py-4">
-      <img className="col-start-1 row-span-2 h-14 w-14 rounded-lg object-cover bg-clay-50" src={image || PLACEHOLDER} alt="" />
+    <li className="grid grid-cols-[56px_minmax(0,1fr)_auto] gap-4 border-b border-line py-4 last:border-0">
+      <img className="h-14 w-14 rounded-lg object-cover bg-slate-50 border border-line" src={image || PLACEHOLDER} alt="" />
       
-      <div className="col-start-2 row-start-1 flex flex-col min-w-0">
-        <p className="line-clamp-2 text-sm font-medium leading-tight text-ink">{name}</p>
-        <p className="mt-1 text-xs text-ink-muted">{formatPrice(price)}</p>
+      <div className="flex flex-col min-w-0 justify-between">
+        <div>
+          <p className="line-clamp-2 text-sm font-medium leading-tight text-ink">{name}</p>
+          <p className="mt-1 text-xs text-ink-muted">{formatPrice(price)}</p>
+        </div>
+        
+        <div className="flex items-center gap-1 mt-2 w-fit rounded-md border border-line bg-white p-0.5">
+          <button type="button" className="flex h-6 w-6 items-center justify-center rounded text-ink hover:bg-slate-100" onClick={() => onQuantityChange(id, quantity - 1)}>−</button>
+          <span className="min-w-[20px] text-center text-xs font-semibold text-ink">{quantity}</span>
+          <button type="button" className="flex h-6 w-6 items-center justify-center rounded text-ink hover:bg-slate-100" onClick={() => onQuantityChange(id, quantity + 1)}>+</button>
+        </div>
       </div>
 
-      <div className="col-start-2 row-start-2 flex items-center gap-1 self-end justify-self-start rounded-lg border border-line bg-paper p-0.5">
-        <button type="button" className="flex h-7 w-7 items-center justify-center rounded text-ink hover:bg-line" onClick={() => onQuantityChange(id, quantity - 1)}>−</button>
-        <span className="min-w-[20px] text-center text-sm font-semibold text-ink">{quantity}</span>
-        <button type="button" className="flex h-7 w-7 items-center justify-center rounded text-ink hover:bg-line" onClick={() => onQuantityChange(id, quantity + 1)}>+</button>
-      </div>
-
-      <div className="col-start-3 row-start-2 flex items-end justify-end gap-2">
-        <p className="text-sm font-bold text-ink whitespace-nowrap">{formatPrice(price * quantity)}</p>
-        <button type="button" className="text-lg text-red-500 hover:text-red-700 leading-none px-1 mb-0.5" onClick={() => onRemove(id)}>×</button>
+      <div className="flex flex-col items-end justify-between py-1">
+        <button type="button" className="text-slate-400 hover:text-red-500 transition-colors" onClick={() => onRemove(id)}>✕</button>
+        <p className="text-sm font-bold text-ink whitespace-nowrap mt-4">{formatPrice(price * quantity)}</p>
       </div>
     </li>
   )

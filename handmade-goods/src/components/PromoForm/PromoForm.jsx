@@ -13,23 +13,20 @@ export default function PromoForm({ onApply, error }) {
     defaultValues: { promoCode: '' },
   })
 
-  const onSubmit = (data) => onApply(data.promoCode)
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mb-4" noValidate>
+    <form onSubmit={handleSubmit((data) => onApply(data.promoCode))} className="mb-4" noValidate>
       <div className="flex gap-2">
         <input
           type="text"
           placeholder="Промокод"
           {...register('promoCode')}
-          className={`flex-1 rounded-lg border px-3 py-2 text-sm bg-paper outline-none transition-colors focus:border-clay-600 ${errors.promoCode || error ? 'border-red-500' : 'border-line'}`}
+          className={`flex-1 rounded-lg border px-3 py-2 text-sm bg-paper text-ink outline-none transition-colors focus:border-clay-600 focus:ring-1 focus:ring-clay-600 ${errors.promoCode || error ? 'border-red-500' : 'border-edge'}`}
         />
-        <button type="submit" className="rounded-lg bg-clay-100 px-4 py-2 text-sm font-medium text-clay-700 transition-colors hover:bg-clay-200">
+        <button type="submit" className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 border border-line shadow-sm">
           Застосувати
         </button>
       </div>
-      {errors.promoCode && <p className="mt-1 text-xs text-red-500">{errors.promoCode.message}</p>}
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      {(errors.promoCode || error) && <p className="mt-1 text-xs text-red-500">{errors.promoCode?.message || error}</p>}
     </form>
   )
 }

@@ -5,7 +5,7 @@ export default function CurrencySwitcher() {
 
   return (
     <select
-      className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink outline-none focus:border-clay-600 focus:ring-1 focus:ring-clay-600"
+      className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink outline-none focus:border-clay-600 focus:ring-1 focus:ring-clay-600 shadow-sm cursor-pointer"
       value={currency}
       onChange={(e) => setCurrency(e.target.value)}
     >
