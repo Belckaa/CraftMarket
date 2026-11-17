@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "check:cart": "node scripts/check-cart-reducer.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.6",

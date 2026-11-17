@@ -1,0 +1,22 @@
+/* Загальний каркас застосунку CraftMarket */
+
+.app__layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 32px;
+  align-items: start;
+}
+
+.app__cart-counter {
+  background: var(--bg-elevated);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 14px;
+}
+
+@media (max-width: 1024px) {
+  .app__layout {
+    grid-template-columns: 1fr;
+  }
+}

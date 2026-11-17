@@ -1,6 +1,11 @@
+import { useCart } from '@/hooks/useCart'
 import CatalogPage from '@/pages/CatalogPage'
+import CartPage from '@/components/CartPage/CartPage'
+import './App.css'
 
 function App() {
+  const cart = useCart()
+
   return (
     <main className="app">
       <header className="app__header">
@@ -11,9 +16,19 @@ function App() {
             <p className="brand__subtitle">Вітрина товарів ручної роботи</p>
           </div>
         </div>
+        <div className="app__cart-counter">
+          У кошику: <strong>{cart.totalCount}</strong>
+        </div>
       </header>
 
-      <CatalogPage />
+      <div className="app__layout">
+        <div className="app__catalog">
+          <CatalogPage onAddToCart={cart.addItem} />
+        </div>
+        <aside className="app__cart">
+          <CartPage cart={cart} />
+        </aside>
+      </div>
     </main>
   )
 }

@@ -13,7 +13,7 @@ const PLACEHOLDER_IMAGE = new URL('../../assets/product-placeholder.svg', import
  * @param {boolean} [props.onSale=false]
  * @param {string} [props.highlightQuery='']
  */
-function ProductCard({ name, price, image, category, inStock = true, onSale = false, highlightQuery = '' }) {
+function ProductCard({ name, price, image, category, inStock = true, onSale = false, highlightQuery = '', onAddToCart }) {
   const imageSrc = image || PLACEHOLDER_IMAGE
 
   const renderBadge = () => {
@@ -52,9 +52,12 @@ function ProductCard({ name, price, image, category, inStock = true, onSale = fa
         {renderBadge()}
       </div>
       <div className="product-card__content">
-        <p className="product-card__category">{category}</p>
+<p className="product-card__category">{category}</p>
         <h3 className="product-card__name">{renderHighlightedName()}</h3>
         <p className="product-card__price">{price.toLocaleString('uk-UA')} ₴</p>
+        <button type="button" className="product-card__add" disabled={!inStock} onClick={onAddToCart}>
+          {inStock ? "До кошика" : "Немає в наявності"}
+        </button>
       </div>
     </article>
   )
@@ -68,6 +71,7 @@ ProductCard.propTypes = {
   inStock: PropTypes.bool,
   onSale: PropTypes.bool,
   highlightQuery: PropTypes.string,
+  onAddToCart: PropTypes.func.isRequired,
 }
 
 export default ProductCard

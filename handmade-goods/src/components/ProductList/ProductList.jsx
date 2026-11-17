@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import ProductCard from '../ProductCard/ProductCard'
 import styles from './ProductList.module.css'
 
-function ProductList({ products }) {
+function ProductList({ products, onAddToCart }) {
   if (products.length === 0) {
     return (
       <div className={styles.empty}>
@@ -24,6 +24,7 @@ function ProductList({ products }) {
           inStock={product.inStock}
           onSale={product.onSale}
           highlightQuery={product.highlightQuery || ''}
+          onAddToCart={() => onAddToCart(product)}
         />
       ))}
     </div>
@@ -34,6 +35,7 @@ ProductList.propTypes = {
   products: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  onAddToCart: PropTypes.func.isRequired,
       name: PropTypes.string.isRequired,
       price: PropTypes.number.isRequired,
       image: PropTypes.string,
