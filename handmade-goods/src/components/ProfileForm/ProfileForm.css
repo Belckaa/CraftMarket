@@ -1,0 +1,78 @@
+.profile-container {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: var(--bg-elevated);
+  padding: 16px 24px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.profile-label {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.profile-current {
+  font-size: 16px;
+  color: var(--text);
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-grow: 1;
+}
+
+.profile-field {
+  display: flex;
+  gap: 8px;
+}
+
+.profile-input {
+  flex-grow: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.profile-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.profile-input--error {
+  border-color: var(--danger);
+}
+
+.profile-error {
+  font-size: 12px;
+  color: var(--danger);
+}
+
+.profile-submit {
+  padding: 8px 16px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.profile-submit:disabled {
+  opacity: 0.5;
+}
