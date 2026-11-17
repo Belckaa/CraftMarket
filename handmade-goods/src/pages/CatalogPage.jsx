@@ -4,9 +4,8 @@ import ProductList from '../components/ProductList/ProductList'
 import ReviewForm from '../components/ReviewForm/ReviewForm'
 import ProfileForm from '../components/ProfileForm/ProfileForm'
 import './CatalogPage.css'
-import PropTypes from 'prop-types'
 
-function CatalogPage({ onAddToCart }) {
+function CatalogPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [category, setCategory] = useState('all')
   const [minPrice, setMinPrice] = useState('')
@@ -109,7 +108,7 @@ function CatalogPage({ onAddToCart }) {
         </div>
       ) : (
         <>
-          <ProductList products={filteredAndSortedProducts} onAddToCart={onAddToCart} />
+          <ProductList products={filteredAndSortedProducts} />
           
           {/* Варіант 6 та 11: Форма відгуку */}
           <div className="catalog-page__review-section">
@@ -132,5 +131,4 @@ function CatalogPage({ onAddToCart }) {
   )
 }
 
-CatalogPage.propTypes = { onAddToCart: PropTypes.func.isRequired }
 export default CatalogPage

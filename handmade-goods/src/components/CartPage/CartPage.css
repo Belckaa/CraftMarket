@@ -50,6 +50,9 @@
 .cart-panel__row {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-bottom: 8px;
   font-size: 14px;
   color: var(--text-secondary);
@@ -60,11 +63,16 @@
 }
 
 .cart-panel__row--total {
-  font-size: 18px;
+  font-size: 16px;
   color: var(--text);
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px dashed var(--border);
+}
+
+.cart-panel__row--total strong {
+  text-align: right;
+  word-break: break-word;
 }
 
 .cart-panel__clear {

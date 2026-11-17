@@ -1,0 +1,14 @@
+.currency-switcher {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+}
+.currency-switcher:focus {
+  border-color: var(--accent);
+}

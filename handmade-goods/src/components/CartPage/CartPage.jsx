@@ -1,16 +1,18 @@
-import PropTypes from 'prop-types'
 import CartItem from '../CartItem/CartItem'
 import PromoForm from '../PromoForm/PromoForm'
-import { formatPrice } from '@/utils/formatPrice'
+import { useCartContext } from '@/context/useCartContext'
+import { useFormatPrice } from '@/utils/formatPrice'
 import './CartPage.css'
 
-export default function CartPage({ cart }) {
+export default function CartPage() {
   const { 
     items, totalCount, totalPrice, discountAmount, finalPrice, 
-    promo, promoError, isEmpty, updateQuantity, removeItem, clearCart, applyPromo 
-  } = cart
+    promo, promoError, updateQuantity, removeItem, clearCart, applyPromo 
+  } = useCartContext()
+  
+  const formatPrice = useFormatPrice()
 
-  if (isEmpty) {
+  if (items.length === 0) {
     return (
       <section className="cart-panel">
         <h2 className="cart-panel__title">Кошик</h2>
@@ -60,21 +62,4 @@ export default function CartPage({ cart }) {
       </div>
     </section>
   )
-}
-
-CartPage.propTypes = {
-  cart: PropTypes.shape({
-    items: PropTypes.array.isRequired,
-    totalCount: PropTypes.number.isRequired,
-    totalPrice: PropTypes.number.isRequired,
-    discountAmount: PropTypes.number.isRequired,
-    finalPrice: PropTypes.number.isRequired,
-    promo: PropTypes.string,
-    promoError: PropTypes.string,
-    isEmpty: PropTypes.bool.isRequired,
-    updateQuantity: PropTypes.func.isRequired,
-    removeItem: PropTypes.func.isRequired,
-    clearCart: PropTypes.func.isRequired,
-    applyPromo: PropTypes.func.isRequired,
-  }).isRequired,
 }

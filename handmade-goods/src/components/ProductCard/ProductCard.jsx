@@ -1,4 +1,6 @@
 import PropTypes from 'prop-types'
+import { useCartContext } from '@/context/useCartContext'
+import { useFormatPrice } from '@/utils/formatPrice'
 import './product-card.css'
 
 const PLACEHOLDER_IMAGE = new URL('../../assets/product-placeholder.svg', import.meta.url).href
@@ -13,7 +15,9 @@ const PLACEHOLDER_IMAGE = new URL('../../assets/product-placeholder.svg', import
  * @param {boolean} [props.onSale=false]
  * @param {string} [props.highlightQuery='']
  */
-function ProductCard({ name, price, image, category, inStock = true, onSale = false, highlightQuery = '', onAddToCart }) {
+function ProductCard({ name, price, image, category, inStock = true, onSale = false, highlightQuery = '' }) {
+  const { addItem } = useCartContext()
+  const formatPrice = useFormatPrice()
   const imageSrc = image || PLACEHOLDER_IMAGE
 
   const renderBadge = () => {
@@ -54,8 +58,8 @@ function ProductCard({ name, price, image, category, inStock = true, onSale = fa
       <div className="product-card__content">
 <p className="product-card__category">{category}</p>
         <h3 className="product-card__name">{renderHighlightedName()}</h3>
-        <p className="product-card__price">{price.toLocaleString('uk-UA')} ₴</p>
-        <button type="button" className="product-card__add" disabled={!inStock} onClick={onAddToCart}>
+        <p className="product-card__price">{formatPrice(price)}</p>
+        <button type="button" className="product-card__add" disabled={!inStock} onClick={() => addItem({ id: name, name, price, image, inStock })}>
           {inStock ? "До кошика" : "Немає в наявності"}
         </button>
       </div>
@@ -71,7 +75,6 @@ ProductCard.propTypes = {
   inStock: PropTypes.bool,
   onSale: PropTypes.bool,
   highlightQuery: PropTypes.string,
-  onAddToCart: PropTypes.func.isRequired,
 }
 
 export default ProductCard

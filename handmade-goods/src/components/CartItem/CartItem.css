@@ -35,8 +35,10 @@
 }
 
 .cart-item__unit {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-secondary);
+  line-height: 1.3;
+  overflow-wrap: break-word;
 }
 
 .cart-item__controls {
@@ -82,10 +84,14 @@
   grid-column: 3 / 4;
   grid-row: 2;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 12px;
   align-self: end;
   justify-self: end;
   margin-bottom: 4px;
+  text-align: right;
+  max-width: 110px; /* трохи ширше */
+  line-height: 1.3;
+  overflow-wrap: break-word; /* переносити тільки цілі слова */
 }
 
 .cart-item__remove {

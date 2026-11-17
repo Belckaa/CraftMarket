@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
-import { formatPrice } from '@/utils/formatPrice'
+import { useFormatPrice } from '@/utils/formatPrice'
 import './CartItem.css'
 
 const PLACEHOLDER = new URL('../../assets/product-placeholder.svg', import.meta.url).href
 
 export default function CartItem({ item, onQuantityChange, onRemove }) {
+  const formatPrice = useFormatPrice()
   const { id, name, price, image, quantity } = item
 
   return (

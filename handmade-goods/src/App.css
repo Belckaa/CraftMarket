@@ -36,3 +36,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+.app__header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
