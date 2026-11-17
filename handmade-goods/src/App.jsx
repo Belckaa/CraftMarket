@@ -2,38 +2,41 @@ import CatalogPage from '@/pages/CatalogPage'
 import CartPage from '@/components/CartPage/CartPage'
 import CurrencySwitcher from '@/components/CurrencySwitcher/CurrencySwitcher'
 import { useCartContext } from '@/context/useCartContext'
-import './App.css'
+
+const container = "mx-auto max-w-6xl px-4"
 
 function App() {
   const { totalCount } = useCartContext()
 
   return (
-    <main className="app">
-      <header className="app__header">
-        <div className="brand">
-          <span className="brand__mark">CM</span>
-          <div>
-            <h1 className="brand__title">CraftMarket</h1>
-            <p className="brand__subtitle">Вітрина товарів ручної роботи</p>
+    <div className="min-h-screen">
+      <header className="border-b border-line bg-white">
+        <div className={`${container} flex items-center justify-between py-4`}>
+          <div className="flex items-center gap-4">
+            <span className="font-display text-2xl font-bold tracking-tight text-clay-700">CraftMarket</span>
+            <p className="hidden text-sm text-ink-muted sm:block">Вітрина товарів ручної роботи</p>
           </div>
-        </div>
-        <div className="app__header-controls">
-          <CurrencySwitcher />
-          <div className="app__cart-counter">
-            У кошику: <strong>{totalCount}</strong>
+          <div className="flex items-center gap-4">
+            <CurrencySwitcher />
+            <div className="rounded-lg border border-line bg-paper px-4 py-2 text-sm font-medium text-ink">
+              У кошику: <strong className="text-clay-600">{totalCount}</strong>
+            </div>
           </div>
         </div>
       </header>
 
-      <div className="app__layout">
-        <div className="app__catalog">
-          <CatalogPage />
+      <main className={`${container} py-8`}>
+        <h1 className="font-display text-3xl font-bold text-ink mb-6">Каталог товарів</h1>
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8 items-start">
+          <div>
+            <CatalogPage />
+          </div>
+          <aside>
+            <CartPage />
+          </aside>
         </div>
-        <aside className="app__cart">
-          <CartPage />
-        </aside>
-      </div>
-    </main>
+      </main>
+    </div>
   )
 }
 

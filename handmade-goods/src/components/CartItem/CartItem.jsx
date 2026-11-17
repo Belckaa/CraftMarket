@@ -1,27 +1,31 @@
 import PropTypes from 'prop-types'
 import { useFormatPrice } from '@/utils/formatPrice'
-import './CartItem.css'
 
 const PLACEHOLDER = new URL('../../assets/product-placeholder.svg', import.meta.url).href
 
 export default function CartItem({ item, onQuantityChange, onRemove }) {
-  const formatPrice = useFormatPrice()
   const { id, name, price, image, quantity } = item
+  const formatPrice = useFormatPrice()
 
   return (
-    <li className="cart-item">
-      <img className="cart-item__image" src={image || PLACEHOLDER} alt="" width="64" height="64" />
-      <div className="cart-item__info">
-        <p className="cart-item__title">{name}</p>
-        <p className="cart-item__unit">{formatPrice(price)}</p>
+    <li className="grid grid-cols-[56px_minmax(0,1fr)_auto] grid-rows-[auto_auto] gap-x-3 gap-y-2 border-b border-line py-4">
+      <img className="col-start-1 row-span-2 h-14 w-14 rounded-lg object-cover bg-clay-50" src={image || PLACEHOLDER} alt="" />
+      
+      <div className="col-start-2 row-start-1 flex flex-col min-w-0">
+        <p className="line-clamp-2 text-sm font-medium leading-tight text-ink">{name}</p>
+        <p className="mt-1 text-xs text-ink-muted">{formatPrice(price)}</p>
       </div>
-      <div className="cart-item__controls">
-        <button type="button" onClick={() => onQuantityChange(id, quantity - 1)}>−</button>
-        <span className="cart-item__qty">{quantity}</span>
-        <button type="button" onClick={() => onQuantityChange(id, quantity + 1)}>+</button>
+
+      <div className="col-start-2 row-start-2 flex items-center gap-1 self-end justify-self-start rounded-lg border border-line bg-paper p-0.5">
+        <button type="button" className="flex h-7 w-7 items-center justify-center rounded text-ink hover:bg-line" onClick={() => onQuantityChange(id, quantity - 1)}>−</button>
+        <span className="min-w-[20px] text-center text-sm font-semibold text-ink">{quantity}</span>
+        <button type="button" className="flex h-7 w-7 items-center justify-center rounded text-ink hover:bg-line" onClick={() => onQuantityChange(id, quantity + 1)}>+</button>
       </div>
-      <p className="cart-item__subtotal">{formatPrice(price * quantity)}</p>
-      <button type="button" className="cart-item__remove" onClick={() => onRemove(id)}>×</button>
+
+      <div className="col-start-3 row-start-2 flex items-end justify-end gap-2">
+        <p className="text-sm font-bold text-ink whitespace-nowrap">{formatPrice(price * quantity)}</p>
+        <button type="button" className="text-lg text-red-500 hover:text-red-700 leading-none px-1 mb-0.5" onClick={() => onRemove(id)}>×</button>
+      </div>
     </li>
   )
 }

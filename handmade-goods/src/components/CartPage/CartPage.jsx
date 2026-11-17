@@ -2,7 +2,6 @@ import CartItem from '../CartItem/CartItem'
 import PromoForm from '../PromoForm/PromoForm'
 import { useCartContext } from '@/context/useCartContext'
 import { useFormatPrice } from '@/utils/formatPrice'
-import './CartPage.css'
 
 export default function CartPage() {
   const { 
@@ -14,49 +13,54 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <section className="cart-panel">
-        <h2 className="cart-panel__title">Кошик</h2>
-        <p className="cart-panel__empty">У кошику поки немає товарів.</p>
+      <section className="sticky top-6 rounded-card border border-line bg-white p-6 shadow-card">
+        <h2 className="mb-4 border-b border-line pb-4 font-display text-xl font-bold text-ink">Кошик</h2>
+        <p className="py-10 text-center text-sm text-ink-muted">У кошику поки немає товарів.</p>
       </section>
     )
   }
 
   return (
-    <section className="cart-panel">
-      <h2 className="cart-panel__title">Кошик ({totalCount})</h2>
-      <ul className="cart-panel__list">
+    <section className="sticky top-6 rounded-card border border-line bg-white p-6 shadow-card">
+      <h2 className="mb-4 border-b border-line pb-4 font-display text-xl font-bold text-ink">Кошик ({totalCount})</h2>
+      
+      <ul className="max-h-[400px] overflow-y-auto mb-4 p-0">
         {items.map((item) => (
           <CartItem key={item.id} item={item} onQuantityChange={updateQuantity} onRemove={removeItem} />
         ))}
       </ul>
 
-      <div className="cart-panel__summary">
+      <div className="border-t border-line pt-4">
         {!promo ? (
           <PromoForm onApply={applyPromo} error={promoError} />
         ) : (
-          <div className="cart-panel__promo-applied">
+          <div className="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700">
             Промокод <strong>{promo}</strong> застосовано
           </div>
         )}
 
-        <div className="cart-panel__row">
+        <div className="flex justify-between text-sm text-ink-muted mb-2">
           <span>Сума:</span>
           <span>{formatPrice(totalPrice)}</span>
         </div>
         
         {discountAmount > 0 && (
-          <div className="cart-panel__row cart-panel__row--discount">
+          <div className="flex justify-between text-sm text-green-600 mb-2">
             <span>Знижка (10%):</span>
             <span>-{formatPrice(discountAmount)}</span>
           </div>
         )}
 
-        <div className="cart-panel__row cart-panel__row--total">
+        <div className="flex justify-between items-center text-lg font-bold text-ink mt-3 border-t border-dashed border-line pt-3">
           <span>До сплати:</span>
           <strong>{formatPrice(finalPrice)}</strong>
         </div>
 
-        <button type="button" className="cart-panel__clear" onClick={clearCart}>
+        <button 
+          type="button" 
+          className="mt-4 w-full rounded-lg border border-red-500 px-4 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50" 
+          onClick={clearCart}
+        >
           Очистити кошик
         </button>
       </div>

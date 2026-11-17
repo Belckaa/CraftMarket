@@ -1,168 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
 
-:root {
-  --bg: #f4f7fe;
-  --bg-elevated: #ffffff;
-  --bg-hover: #f1f5f9;
-  --border: #e2e8f0;
-  --text: #0f172a;
-  --text-secondary: #64748b;
-  --text-muted: #94a3b8;
-  --accent: #10b981;
-  --accent-light: #ecfdf5;
-  --danger: #ef4444;
-  --danger-light: #fef2f2;
-  --radius: 16px;
-  --radius-sm: 10px;
-  --shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+@theme {
+  /* Колір: теракота для акцентів і теплі «паперові» нейтральні відтінки */
+  --color-clay-50: #fbf3ef;
+  --color-clay-100: #f5e1d6;
+  --color-clay-600: #b4492b;
+  --color-clay-700: #8f3a22;
+  --color-ink: #2b2420;
+  --color-ink-muted: #6b5f57;
+  --color-paper: #fdfaf6;
+  --color-line: #e6dcd2;
+  --color-edge: #8a7d73;
+
+  /* Типографіка */
+  --font-display: Georgia, "Times New Roman", serif;
+
+  /* Форма й глибина */
+  --radius-card: 0.875rem;
+  --shadow-card: 0 1px 2px rgb(43 36 32 / 6%), 0 4px 12px rgb(43 36 32 / 8%);
+  --shadow-lift: 0 2px 4px rgb(43 36 32 / 8%), 0 12px 24px rgb(43 36 32 / 14%);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-[data-theme='dark'] {
-  --bg: #0b0f19;
-  --bg-elevated: #151a28;
-  --bg-hover: #1f2535;
-  --border: #262c3e;
-  --text: #f5f5f5;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --accent-light: rgba(16, 185, 129, 0.1);
-  --danger-light: rgba(239, 68, 68, 0.1);
-  --shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body,
-#root {
-  min-height: 100%;
-}
-
-body {
-  margin: 0;
-  font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--text);
-  background: var(--bg);
-  -webkit-font-smoothing: antialiased;
-  transition:
-    background-color 150ms ease,
-    color 150ms ease;
-}
-
-h1,
-h2,
-h3 {
-  margin: 0;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-p {
-  margin: 0;
-}
-
-.app {
-  width: min(1120px, calc(100% - 48px));
-  margin: 0 auto;
-  padding: 40px 0;
-}
-
-.app__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 32px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.brand__mark {
-  display: grid;
-  width: 48px;
-  height: 48px;
-  place-items: center;
-  font-weight: 700;
-  color: var(--bg-elevated);
-  background: var(--text);
-  border-radius: var(--radius-sm);
-}
-
-.brand__title {
-  font-size: 24px;
-}
-
-.brand__subtitle {
-  color: var(--text-secondary);
-}
-
-.hero-card {
-  padding: 32px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-
-.eyebrow {
-  margin-bottom: 10px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.hero-card h2 {
-  margin-bottom: 12px;
-  font-size: 28px;
-}
-
-.muted {
-  max-width: 620px;
-  color: var(--text-secondary);
-}
-
-/* Catalog Grid Styles */
-.catalog-header {
-  margin-bottom: 24px;
-}
-
-.catalog-header h2 {
-  font-size: 24px;
-  margin-bottom: 4px;
-}
-
-.catalog-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 24px;
-}
-
-/* Catalog Grid Styles */
-.catalog-header {
-  margin-bottom: 24px;
-}
-
-.catalog-header h2 {
-  font-size: 24px;
-  margin-bottom: 4px;
-}
-
-.catalog-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 24px;
+@layer base {
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+  }
 }

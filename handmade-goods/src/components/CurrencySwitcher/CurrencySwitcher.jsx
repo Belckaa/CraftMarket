@@ -1,12 +1,11 @@
 import { useCurrencyContext } from '@/context/useCurrencyContext'
-import './CurrencySwitcher.css'
 
 export default function CurrencySwitcher() {
   const { currency, setCurrency } = useCurrencyContext()
 
   return (
     <select
-      className="currency-switcher"
+      className="rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink outline-none focus:border-clay-600 focus:ring-1 focus:ring-clay-600"
       value={currency}
       onChange={(e) => setCurrency(e.target.value)}
     >

@@ -1,89 +1,87 @@
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { reviewSchema } from '@/schemas/reviewSchema'
-import './ReviewForm.css'
+import { z } from 'zod'
 
-function ReviewForm({ productName, onReviewSubmit }) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting, isSubmitSuccessful },
-  } = useForm({
+const reviewSchema = z.object({
+  authorName: z.string().trim().min(2, "Ім'я має містити щонайменше 2 символи").max(50),
+  rating: z.coerce.number().min(1, 'Мінімум 1').max(5, 'Максимум 5'),
+  reviewText: z.string().trim().min(10, 'Мінімум 10 символів').max(500),
+})
+
+export default function ReviewForm({ productName }) {
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting, isSubmitSuccessful } } = useForm({
     resolver: zodResolver(reviewSchema),
     defaultValues: { authorName: '', rating: '', reviewText: '' },
   })
 
   const onSubmit = (data) => {
-    onReviewSubmit(data)
+    console.log('Відгук:', data)
     reset()
   }
 
   return (
-    <div className="review-container">
-      {/* Варіант 11: Виводимо назву товару в заголовку */}
-      <h3 className="review-title">
-        Залишити відгук про <span className="review-product-name">{productName}</span>
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-6 rounded-card border border-line bg-white p-6 shadow-card" noValidate>
+      <h3 className="mb-4 font-display text-lg font-bold text-ink">
+        Залишити відгук про <span className="text-clay-600">{productName}</span>
       </h3>
 
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="review-form">
-        <div className="review-field">
-          <label htmlFor="authorName" className="review-label">Ваше ім'я</label>
+      <div className="space-y-4">
+        <div>
+          <label htmlFor="authorName" className="mb-1 block text-sm font-medium text-ink">Ваше ім'я</label>
           <input
             id="authorName"
-            type="text"
             {...register('authorName')}
-            className={`review-input ${errors.authorName ? 'review-input--error' : ''}`}
-            placeholder="Введіть ваше ім'я"
+            aria-invalid={!!errors.authorName}
+            className="w-full rounded-lg border border-edge bg-paper px-4 py-2 text-sm text-ink outline-none transition-colors aria-[invalid=true]:border-red-500 aria-[invalid=true]:bg-red-50 focus:border-clay-600 focus:ring-1 focus:ring-clay-600"
           />
-          {errors.authorName && <p role="alert" className="review-error">{errors.authorName.message}</p>}
+          {errors.authorName && <p className="mt-1 text-xs text-red-500">{errors.authorName.message}</p>}
         </div>
 
-        <div className="review-field">
-          <label htmlFor="rating" className="review-label">Оцінка</label>
+        <div>
+          <label htmlFor="rating" className="mb-1 block text-sm font-medium text-ink">Оцінка (1-5)</label>
           <select
             id="rating"
             {...register('rating')}
-            className={`review-input ${errors.rating ? 'review-input--error' : ''}`}
+            aria-invalid={!!errors.rating}
+            className="w-full rounded-lg border border-edge bg-paper px-4 py-2 text-sm text-ink outline-none transition-colors aria-[invalid=true]:border-red-500 aria-[invalid=true]:bg-red-50 focus:border-clay-600 focus:ring-1 focus:ring-clay-600"
           >
-            <option value="" disabled>Оберіть оцінку</option>
-            <option value="1">1 - Жахливо</option>
-            <option value="2">2 - Погано</option>
-            <option value="3">3 - Задовільно</option>
-            <option value="4">4 - Добре</option>
-            <option value="5">5 - Відмінно</option>
+            <option value="">Оберіть...</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
           </select>
-          {errors.rating && <p role="alert" className="review-error">{errors.rating.message}</p>}
+          {errors.rating && <p className="mt-1 text-xs text-red-500">{errors.rating.message}</p>}
         </div>
 
-        <div className="review-field">
-          <label htmlFor="reviewText" className="review-label">Текст відгуку</label>
+        <div>
+          <label htmlFor="reviewText" className="mb-1 block text-sm font-medium text-ink">Текст відгуку</label>
           <textarea
             id="reviewText"
-            rows={4}
             {...register('reviewText')}
-            className={`review-input ${errors.reviewText ? 'review-input--error' : ''}`}
-            placeholder="Що вам сподобалося або не сподобалося?"
-          />
-          {errors.reviewText && <p role="alert" className="review-error">{errors.reviewText.message}</p>}
+            rows="3"
+            aria-invalid={!!errors.reviewText}
+            className="w-full rounded-lg border border-edge bg-paper px-4 py-2 text-sm text-ink outline-none transition-colors aria-[invalid=true]:border-red-500 aria-[invalid=true]:bg-red-50 focus:border-clay-600 focus:ring-1 focus:ring-clay-600"
+          ></textarea>
+          {errors.reviewText && <p className="mt-1 text-xs text-red-500">{errors.reviewText.message}</p>}
         </div>
+      </div>
 
-        <button type="submit" disabled={isSubmitting} className="review-submit">
-          {isSubmitting ? 'Надсилання…' : 'Залишити відгук'}
-        </button>
-
-        {isSubmitSuccessful && (
-          <p className="review-success">Дякуємо за ваш відгук!</p>
-        )}
-      </form>
-    </div>
+      <button 
+        type="submit" 
+        disabled={isSubmitting} 
+        className="mt-4 rounded-lg bg-clay-600 px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-clay-700 disabled:opacity-50"
+      >
+        {isSubmitting ? 'Надсилання...' : 'Надіслати'}
+      </button>
+      
+      {isSubmitSuccessful && <p className="mt-2 text-sm text-green-600">Дякуємо за ваш відгук!</p>}
+    </form>
   )
 }
 
 ReviewForm.propTypes = {
   productName: PropTypes.string.isRequired,
-  onReviewSubmit: PropTypes.func.isRequired,
 }
-
-export default ReviewForm
