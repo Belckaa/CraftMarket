@@ -1,30 +1,43 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { fetchProducts } from '../api/products'
+
+const initialState = { status: 'loading', products: [], error: null, isRefetching: false }
 
 export function useProducts() {
-  const [products, setProducts] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [retryCount, setRetryCount] = useState(0)
+  const [state, setState] = useState(initialState)
+  const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
-    let isActive = true
-    async function load() {
-      setIsLoading(true)
-      setError(null)
-      try {
-        const response = await fetch('/api/products')
-        if (!response.ok) throw new Error(`Сервер повернув статус ${response.status}`)
-        const data = await response.json()
-        if (isActive) setProducts(data)
-      } catch (err) {
-        if (isActive) setError(err.message)
-      } finally {
-        if (isActive) setIsLoading(false)
-      }
-    }
-    load()
-    return () => { isActive = false }
-  }, [retryCount])
+    const controller = new AbortController()
 
-  return { products, isLoading, error, retry: () => setRetryCount((c) => c + 1) }
+    fetchProducts({ signal: controller.signal })
+      .then((products) => {
+        setState({ status: 'success', products, error: null, isRefetching: false })
+      })
+      .catch((error) => {
+        if (error.name === 'AbortError') return
+        // Варіант 11: якщо вже є дані, не стираємо їх при помилці
+        setState((prev) => ({ 
+          ...prev, 
+          status: 'error', 
+          error, 
+          isRefetching: false 
+        }))
+      })
+
+    return () => controller.abort()
+  }, [attempt])
+
+  const retry = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      // Варіант 11: залишаємо товари на екрані, вмикаємо "Оновлюємо..."
+      isRefetching: prev.products.length > 0,
+      status: prev.products.length > 0 ? 'success' : 'loading',
+      error: null,
+    }))
+    setAttempt((value) => value + 1)
+  }, [])
+
+  return { ...state, retry }
 }

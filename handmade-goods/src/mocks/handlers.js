@@ -1,27 +1,40 @@
 import { http, HttpResponse, delay } from 'msw'
-import { products } from './data/products.js'
-import { users } from './users.js'
+import { products } from './data/products'
 
 export const handlers = [
-  http.get('/api/products', async () => {
-    await delay(400)
+  http.get('/api/products', async ({ request }) => {
+    const url = new URL(request.url)
+    const error = url.searchParams.get('error')
+    const empty = url.searchParams.get('empty')
+    const delayMs = Number(url.searchParams.get('delay')) || 800
+
+    await delay(delayMs)
+
+    if (error === '500') return HttpResponse.json({ message: 'Внутрішня помилка' }, { status: 500 })
+    if (error === 'network') return HttpResponse.error()
+    if (empty === 'true') return HttpResponse.json([])
+    
     return HttpResponse.json(products)
   }),
-  http.get('/api/products/:id', async ({ params }) => {
-    await delay(400)
-    // params.id — завжди рядок, тому порівнюємо через String()
-    const product = products.find((item) => String(item.id) === params.id)
-    if (!product) {
-      return HttpResponse.json({ message: 'Товар не знайдено' }, { status: 404 })
-    }
-    return HttpResponse.json(product)
-  }),
-  http.get('/api/users/:id', async ({ params }) => {
-    await delay(300)
-    const user = users.find((item) => String(item.id) === params.id)
-    if (!user) {
-      return HttpResponse.json({ message: 'Користувача не знайдено' }, { status: 404 })
-    }
-    return HttpResponse.json(user)
+
+  http.get('/api/categories', async ({ request }) => {
+    const url = new URL(request.url)
+    const error = url.searchParams.get('error')
+    const empty = url.searchParams.get('empty')
+    const delayMs = Number(url.searchParams.get('delay')) || 800
+
+    await delay(delayMs)
+
+    if (error === '500') return HttpResponse.json({ message: 'Внутрішня помилка' }, { status: 500 })
+    if (error === 'network') return HttpResponse.error()
+    if (empty === 'true') return HttpResponse.json([])
+
+    return HttpResponse.json([
+      { id: 'cat1', name: 'Кераміка' },
+      { id: 'cat2', name: 'Текстиль' },
+      { id: 'cat3', name: 'Дерево' },
+      { id: 'cat4', name: 'Свічки' },
+      { id: 'cat5', name: 'Прикраси' },
+    ])
   }),
 ]

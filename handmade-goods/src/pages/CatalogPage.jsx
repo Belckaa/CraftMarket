@@ -1,17 +1,20 @@
-import { useMemo, useState } from 'react'
-import { useCartContext as useCart } from '@/context/useCartContext'
+import { useState, useMemo } from 'react'
+import PropTypes from 'prop-types'
+import SearchPanel from '../components/SearchPanel/SearchPanel'
+import ProductList from '../components/ProductList/ProductList'
+import ProductModal from '../components/ProductModal/ProductModal'
+import CategorySidebar from '../components/CategorySidebar/CategorySidebar'
+import ReviewForm from '../components/ReviewForm/ReviewForm'
+import ProfileForm from '../components/ProfileForm/ProfileForm'
 import { useProducts } from '@/hooks/useProducts'
-import SearchPanel from '@/components/SearchPanel/SearchPanel'
-import ProductList from '@/components/ProductList/ProductList'
-import ProductModal from '@/components/ProductModal/ProductModal'
-import ReviewForm from '@/components/ReviewForm/ReviewForm'
-import ProfileForm from '@/components/ProfileForm/ProfileForm'
-import { Toast } from '@/components/ui'
+import { getErrorMessage } from '@/utils/getErrorMessage'
+import { Toast, Loader } from '@/components/ui'
+import ErrorMessage from '../components/ErrorMessage/ErrorMessage'
+import DevMockPanel from '../components/DevMockPanel' // <--- Імпорт панелі
 
-export default function CatalogPage() {
-  const cart = useCart()
-  const { products, isLoading, error, retry } = useProducts()
-
+function CatalogPage({ onAddToCart }) {
+  const { status, products, error, isRefetching, retry } = useProducts()
+  
   const [searchQuery, setSearchQuery] = useState('')
   const [category, setCategory] = useState('all')
   const [minPrice, setMinPrice] = useState('')
@@ -41,20 +44,23 @@ export default function CatalogPage() {
     else if (sortBy === 'price-asc') result.sort((a, b) => a.price - b.price || a.name.localeCompare(b.name, 'uk'))
     else if (sortBy === 'price-desc') result.sort((a, b) => b.price - a.price || a.name.localeCompare(b.name, 'uk'))
 
-    return result.map((p) => ({ ...p, highlightQuery: searchQuery }))
+    return result.map(p => ({ ...p, highlightQuery: searchQuery }))
   }, [products, searchQuery, category, minPrice, maxPrice, sortBy])
 
   const handleReviewSubmit = (review) => {
-    setReviews((prev) => [...prev, review])
+    setReviews(prev => [...prev, review])
     setToastMessage('Дякуємо! Ваш відгук успішно додано.')
   }
 
   return (
-    <div className="flex flex-col w-full">
-      <title>Каталог | CraftMarket</title>
-      <Toast message={toastMessage} onClose={() => setToastMessage(null)} duration={3000} />
-      <ProfileForm />
+    <div className="flex flex-col w-full relative">
+      {/* Додаємо панель сюди */}
+      {import.meta.env.DEV && <DevMockPanel />}
 
+      <Toast message={toastMessage} onClose={() => setToastMessage(null)} duration={3000} animateExit={true} />
+
+      <ProfileForm />
+      
       <SearchPanel
         searchQuery={searchQuery} onSearchChange={setSearchQuery}
         category={category} onCategoryChange={setCategory}
@@ -63,54 +69,68 @@ export default function CatalogPage() {
         sortBy={sortBy} onSortChange={setSortBy}
       />
 
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-ink-900">Каталог товарів</h1>
-        {!isLoading && !error && (
-          <p className="text-ink-500 font-medium">Знайдено: {filteredAndSortedProducts.length}</p>
-        )}
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8 mt-8">
+        <aside>
+          <CategorySidebar activeCategory={category} onSelectCategory={setCategory} />
+        </aside>
 
-      {isLoading ? (
-        <p role="status" className="py-16 text-center text-ink-500">Завантаження каталогу…</p>
-      ) : error ? (
-        <div role="alert" className="rounded-control border border-danger-600 bg-danger-100 p-8 text-center text-danger-600">
-          <p className="mb-4 font-semibold">Не вдалося завантажити каталог: {error}</p>
-          <button onClick={retry} className="rounded-control bg-danger-600 px-4 py-2 font-semibold text-white">
-            Спробувати ще раз
-          </button>
-        </div>
-      ) : (
-        <>
-          <ProductList
-            products={filteredAndSortedProducts}
-            onAddToCart={cart.addItem}
-            onOpenDetails={setSelectedProduct}
-          />
-          <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
-
-          <div className="mt-12 border-t border-ink-300/30 pt-8">
-            <h3 className="mb-6 text-xl font-bold text-ink-900">Відгуки</h3>
-            {reviews.length > 0 ? (
-              <div className="mb-6 space-y-4">
-                {reviews.map((r, i) => (
-                  <div key={i} className="rounded-control bg-ink-100 p-4">
-                    <p className="font-semibold text-ink-900">
-                      {r.authorName} <span className="text-brand-600">({r.rating}/5)</span>
-                    </p>
-                    <p className="text-ink-600">{r.reviewText}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="mb-6 text-ink-500">Ще немає відгуків.</p>
+        <div>
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-ink-900">Каталог товарів</h2>
+            {!isRefetching && status === 'success' && (
+              <p className="text-ink-500 font-medium">Знайдено: {filteredAndSortedProducts.length}</p>
             )}
-            <ReviewForm
-              productName="Гончарна ваза «Лаванда»"
-              onReviewSubmit={handleReviewSubmit}
-            />
           </div>
-        </>
-      )}
+
+          {isRefetching && (
+            <div className="mb-4 flex items-center gap-2 text-sm text-brand-600 font-medium">
+              <span className="animate-spin size-4 rounded-full border-2 border-brand-600 border-t-transparent"></span>
+              Оновлюємо...
+            </div>
+          )}
+
+          {status === 'loading' && <Loader label="Завантаження каталогу..." />}
+
+          {status === 'error' && (
+            <ErrorMessage 
+              title="Каталог не завантажено" 
+              message={getErrorMessage(error)} 
+              onRetry={retry} 
+            />
+          )}
+
+          {status === 'success' && (
+            <>
+              <ProductList 
+                products={filteredAndSortedProducts} 
+                onAddToCart={onAddToCart} 
+                onOpenDetails={setSelectedProduct} 
+              />
+              <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+
+              <div className="mt-12 border-t border-ink-300/30 pt-8">
+                <h3 className="mb-6 text-xl font-bold text-ink-900">Відгуки</h3>
+                {reviews.length > 0 ? (
+                  <div className="mb-6 space-y-4">
+                    {reviews.map((r, i) => (
+                      <div key={i} className="rounded-control bg-ink-100 p-4">
+                        <p className="font-semibold text-ink-900">{r.authorName} <span className="text-brand-600">({r.rating}/5)</span></p>
+                        <p className="text-ink-600">{r.reviewText}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mb-6 text-ink-500">Ще немає відгуків.</p>
+                )}
+                <ReviewForm productName="Гончарна ваза «Лаванда»" onReviewSubmit={handleReviewSubmit} />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
+
+CatalogPage.propTypes = { onAddToCart: PropTypes.func.isRequired }
+export default CatalogPage
