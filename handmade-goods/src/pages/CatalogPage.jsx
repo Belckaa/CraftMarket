@@ -1,47 +1,26 @@
-import { useState, useEffect, useMemo } from 'react'
-import PropTypes from 'prop-types'
-import SearchPanel from '../components/SearchPanel/SearchPanel'
-import ProductList from '../components/ProductList/ProductList'
-import ProductModal from '../components/ProductModal/ProductModal'
-import ReviewForm from '../components/ReviewForm/ReviewForm'
-import ProfileForm from '../components/ProfileForm/ProfileForm'
+import { useMemo, useState } from 'react'
+import { useCartContext as useCart } from '@/context/useCartContext'
+import { useProducts } from '@/hooks/useProducts'
+import SearchPanel from '@/components/SearchPanel/SearchPanel'
+import ProductList from '@/components/ProductList/ProductList'
+import ProductModal from '@/components/ProductModal/ProductModal'
+import ReviewForm from '@/components/ReviewForm/ReviewForm'
+import ProfileForm from '@/components/ProfileForm/ProfileForm'
 import { Toast } from '@/components/ui'
 
-function CatalogPage({ onAddToCart }) {
+export default function CatalogPage() {
+  const cart = useCart()
+  const { products, isLoading, error, retry } = useProducts()
+
   const [searchQuery, setSearchQuery] = useState('')
   const [category, setCategory] = useState('all')
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
   const [sortBy, setSortBy] = useState('default')
 
-  const [products, setProducts] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [retryCount, setRetryCount] = useState(0)
-
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [toastMessage, setToastMessage] = useState(null)
   const [reviews, setReviews] = useState([])
-
-  useEffect(() => {
-    let isActive = true
-    async function loadProducts() {
-      setIsLoading(true)
-      setError(null)
-      try {
-        const response = await fetch(`/api/products${window.location.search}`)
-        if (!response.ok) throw new Error(`Сервер повернув статус ${response.status}`)
-        const data = await response.json()
-        if (isActive) setProducts(data)
-      } catch (err) {
-        if (isActive) setError(err.message)
-      } finally {
-        if (isActive) setIsLoading(false)
-      }
-    }
-    loadProducts()
-    return () => { isActive = false }
-  }, [retryCount])
 
   const filteredAndSortedProducts = useMemo(() => {
     let result = products.filter((product) => {
@@ -62,29 +41,20 @@ function CatalogPage({ onAddToCart }) {
     else if (sortBy === 'price-asc') result.sort((a, b) => a.price - b.price || a.name.localeCompare(b.name, 'uk'))
     else if (sortBy === 'price-desc') result.sort((a, b) => b.price - a.price || a.name.localeCompare(b.name, 'uk'))
 
-    return result.map(p => ({ ...p, highlightQuery: searchQuery }))
+    return result.map((p) => ({ ...p, highlightQuery: searchQuery }))
   }, [products, searchQuery, category, minPrice, maxPrice, sortBy])
 
-  const handleRetry = () => setRetryCount(prev => prev + 1)
-
   const handleReviewSubmit = (review) => {
-    setReviews(prev => [...prev, review])
-    setToastMessage('Дякуємо! Ваш відгук успішно додано.') // Варіант 1/6
+    setReviews((prev) => [...prev, review])
+    setToastMessage('Дякуємо! Ваш відгук успішно додано.')
   }
 
   return (
     <div className="flex flex-col w-full">
-      {/* Варіант 1 та 6: Спливаюче повідомлення */}
-      <Toast
-        key={toastMessage || 'empty'}
-        message={toastMessage}
-        onClose={() => setToastMessage(null)}
-        duration={3000}
-        animateExit={true}
-      />
-
+      <title>Каталог | CraftMarket</title>
+      <Toast message={toastMessage} onClose={() => setToastMessage(null)} duration={3000} />
       <ProfileForm />
-      
+
       <SearchPanel
         searchQuery={searchQuery} onSearchChange={setSearchQuery}
         category={category} onCategoryChange={setCategory}
@@ -94,36 +64,29 @@ function CatalogPage({ onAddToCart }) {
       />
 
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-ink-900">Каталог товарів</h2>
+        <h1 className="text-2xl font-bold text-ink-900">Каталог товарів</h1>
         {!isLoading && !error && (
-          <p className="text-ink-500 font-medium">Знайдено товарів: {filteredAndSortedProducts.length}</p>
+          <p className="text-ink-500 font-medium">Знайдено: {filteredAndSortedProducts.length}</p>
         )}
       </div>
 
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-ink-500">
-          <div className="mb-4 h-10 w-10 animate-spin rounded-full border-4 border-ink-100 border-t-brand-600"></div>
-          <p>Завантаження каталогу...</p>
-        </div>
+        <p role="status" className="py-16 text-center text-ink-500">Завантаження каталогу…</p>
       ) : error ? (
-        <div className="rounded-control border border-danger-600 bg-danger-100 p-8 text-center text-danger-600" role="alert">
+        <div role="alert" className="rounded-control border border-danger-600 bg-danger-100 p-8 text-center text-danger-600">
           <p className="mb-4 font-semibold">Не вдалося завантажити каталог: {error}</p>
-          <button onClick={handleRetry} className="rounded-control bg-danger-600 px-4 py-2 font-semibold text-white transition-opacity hover:opacity-80">
+          <button onClick={retry} className="rounded-control bg-danger-600 px-4 py-2 font-semibold text-white">
             Спробувати ще раз
           </button>
         </div>
       ) : (
         <>
-          <ProductList 
-            products={filteredAndSortedProducts} 
-            onAddToCart={onAddToCart} 
-            onOpenDetails={setSelectedProduct} 
+          <ProductList
+            products={filteredAndSortedProducts}
+            onAddToCart={cart.addItem}
+            onOpenDetails={setSelectedProduct}
           />
-          
-          <ProductModal 
-            product={selectedProduct} 
-            onClose={() => setSelectedProduct(null)} 
-          />
+          <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
 
           <div className="mt-12 border-t border-ink-300/30 pt-8">
             <h3 className="mb-6 text-xl font-bold text-ink-900">Відгуки</h3>
@@ -131,7 +94,9 @@ function CatalogPage({ onAddToCart }) {
               <div className="mb-6 space-y-4">
                 {reviews.map((r, i) => (
                   <div key={i} className="rounded-control bg-ink-100 p-4">
-                    <p className="font-semibold text-ink-900">{r.authorName} <span className="text-brand-600">({r.rating}/5)</span></p>
+                    <p className="font-semibold text-ink-900">
+                      {r.authorName} <span className="text-brand-600">({r.rating}/5)</span>
+                    </p>
                     <p className="text-ink-600">{r.reviewText}</p>
                   </div>
                 ))}
@@ -139,9 +104,9 @@ function CatalogPage({ onAddToCart }) {
             ) : (
               <p className="mb-6 text-ink-500">Ще немає відгуків.</p>
             )}
-            <ReviewForm 
-              productName="Гончарна ваза «Лаванда»" 
-              onReviewSubmit={handleReviewSubmit} 
+            <ReviewForm
+              productName="Гончарна ваза «Лаванда»"
+              onReviewSubmit={handleReviewSubmit}
             />
           </div>
         </>
@@ -149,7 +114,3 @@ function CatalogPage({ onAddToCart }) {
     </div>
   )
 }
-
-CatalogPage.propTypes = { onAddToCart: PropTypes.func.isRequired }
-
-export default CatalogPage

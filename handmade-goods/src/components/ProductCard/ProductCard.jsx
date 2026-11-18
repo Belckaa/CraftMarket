@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
+import { Link } from 'react-router'
 import { Card, Badge, Button } from '@/components/ui'
 import { formatPrice } from '@/utils/formatPrice'
 
 const PLACEHOLDER_IMAGE = new URL('../../assets/product-placeholder.svg', import.meta.url).href
 
-function ProductCard({ name, price, image, category, inStock = true, onSale = false, highlightQuery = '', onAddToCart, onOpenDetails }) {
+function ProductCard({ id, name, price, image, category, inStock = true, onSale = false, highlightQuery = '', onAddToCart, onOpenDetails }) {
   const imageSrc = image || PLACEHOLDER_IMAGE
 
   const renderBadges = () => {
@@ -40,10 +41,15 @@ function ProductCard({ name, price, image, category, inStock = true, onSale = fa
       <div className="flex flex-1 flex-col p-4">
         <p className="mb-1 text-xs font-semibold tracking-wide text-ink-500 uppercase">{category}</p>
         <h3 className="mb-3 line-clamp-2 text-base font-semibold leading-snug text-ink-900 md:text-lg">
-          {renderHighlightedName()}
+          <Link
+            to={`/product/${id}`}
+            className="hover:underline focus-visible:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 rounded"
+          >
+            {renderHighlightedName()}
+          </Link>
         </h3>
         <p className="mt-auto mb-4 text-xl font-bold text-ink-900">{formatPrice(price)}</p>
-        
+
         <div className="flex gap-2 mt-auto">
           <Button
             variant="secondary"
@@ -67,6 +73,7 @@ function ProductCard({ name, price, image, category, inStock = true, onSale = fa
 }
 
 ProductCard.propTypes = {
+  id: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
   image: PropTypes.string,
