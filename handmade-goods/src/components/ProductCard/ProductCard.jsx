@@ -4,7 +4,7 @@ import { formatPrice } from '@/utils/formatPrice'
 
 const PLACEHOLDER_IMAGE = new URL('../../assets/product-placeholder.svg', import.meta.url).href
 
-function ProductCard({ name, price, image, category, inStock = true, onSale = false, highlightQuery = '', onAddToCart }) {
+function ProductCard({ name, price, image, category, inStock = true, onSale = false, highlightQuery = '', onAddToCart, onOpenDetails }) {
   const imageSrc = image || PLACEHOLDER_IMAGE
 
   const renderBadges = () => {
@@ -25,7 +25,7 @@ function ProductCard({ name, price, image, category, inStock = true, onSale = fa
   }
 
   return (
-    <Card className="h-full w-full">
+    <Card className="h-full w-full transition-all duration-200 hover:-translate-y-1 hover:shadow-lg group">
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-ink-100">
         <img
           className={`h-full w-full object-cover transition-transform duration-500 ${inStock ? 'group-hover:scale-105' : 'grayscale opacity-75'}`}
@@ -44,14 +44,23 @@ function ProductCard({ name, price, image, category, inStock = true, onSale = fa
         </h3>
         <p className="mt-auto mb-4 text-xl font-bold text-ink-900">{formatPrice(price)}</p>
         
-        <Button
-          variant={inStock ? 'primary' : 'secondary'}
-          disabled={!inStock}
-          onClick={onAddToCart}
-          className="w-full"
-        >
-          {inStock ? 'До кошика' : 'Немає в наявності'}
-        </Button>
+        <div className="flex gap-2 mt-auto">
+          <Button
+            variant="secondary"
+            onClick={onOpenDetails}
+            className="flex-1 text-sm active:scale-95 transition-transform"
+          >
+            Деталі
+          </Button>
+          <Button
+            variant={inStock ? 'primary' : 'secondary'}
+            disabled={!inStock}
+            onClick={onAddToCart}
+            className="flex-1 text-sm active:scale-95 transition-transform disabled:active:scale-100"
+          >
+            {inStock ? 'До кошика' : 'Немає'}
+          </Button>
+        </div>
       </div>
     </Card>
   )
@@ -66,6 +75,7 @@ ProductCard.propTypes = {
   onSale: PropTypes.bool,
   highlightQuery: PropTypes.string,
   onAddToCart: PropTypes.func.isRequired,
+  onOpenDetails: PropTypes.func.isRequired,
 }
 
 export default ProductCard

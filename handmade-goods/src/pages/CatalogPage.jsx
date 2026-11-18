@@ -2,6 +2,10 @@ import { useState, useEffect, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import SearchPanel from '../components/SearchPanel/SearchPanel'
 import ProductList from '../components/ProductList/ProductList'
+import ProductModal from '../components/ProductModal/ProductModal'
+import ReviewForm from '../components/ReviewForm/ReviewForm'
+import ProfileForm from '../components/ProfileForm/ProfileForm'
+import { Toast } from '@/components/ui'
 
 function CatalogPage({ onAddToCart }) {
   const [searchQuery, setSearchQuery] = useState('')
@@ -14,6 +18,10 @@ function CatalogPage({ onAddToCart }) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [retryCount, setRetryCount] = useState(0)
+
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [toastMessage, setToastMessage] = useState(null)
+  const [reviews, setReviews] = useState([])
 
   useEffect(() => {
     let isActive = true
@@ -59,8 +67,24 @@ function CatalogPage({ onAddToCart }) {
 
   const handleRetry = () => setRetryCount(prev => prev + 1)
 
+  const handleReviewSubmit = (review) => {
+    setReviews(prev => [...prev, review])
+    setToastMessage('Дякуємо! Ваш відгук успішно додано.') // Варіант 1/6
+  }
+
   return (
     <div className="flex flex-col w-full">
+      {/* Варіант 1 та 6: Спливаюче повідомлення */}
+      <Toast
+        key={toastMessage || 'empty'}
+        message={toastMessage}
+        onClose={() => setToastMessage(null)}
+        duration={3000}
+        animateExit={true}
+      />
+
+      <ProfileForm />
+      
       <SearchPanel
         searchQuery={searchQuery} onSearchChange={setSearchQuery}
         category={category} onCategoryChange={setCategory}
@@ -89,7 +113,38 @@ function CatalogPage({ onAddToCart }) {
           </button>
         </div>
       ) : (
-        <ProductList products={filteredAndSortedProducts} onAddToCart={onAddToCart} />
+        <>
+          <ProductList 
+            products={filteredAndSortedProducts} 
+            onAddToCart={onAddToCart} 
+            onOpenDetails={setSelectedProduct} 
+          />
+          
+          <ProductModal 
+            product={selectedProduct} 
+            onClose={() => setSelectedProduct(null)} 
+          />
+
+          <div className="mt-12 border-t border-ink-300/30 pt-8">
+            <h3 className="mb-6 text-xl font-bold text-ink-900">Відгуки</h3>
+            {reviews.length > 0 ? (
+              <div className="mb-6 space-y-4">
+                {reviews.map((r, i) => (
+                  <div key={i} className="rounded-control bg-ink-100 p-4">
+                    <p className="font-semibold text-ink-900">{r.authorName} <span className="text-brand-600">({r.rating}/5)</span></p>
+                    <p className="text-ink-600">{r.reviewText}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mb-6 text-ink-500">Ще немає відгуків.</p>
+            )}
+            <ReviewForm 
+              productName="Гончарна ваза «Лаванда»" 
+              onReviewSubmit={handleReviewSubmit} 
+            />
+          </div>
+        </>
       )}
     </div>
   )

@@ -1,7 +1,7 @@
 import { useCart } from '@/hooks/useCart'
 import CatalogPage from '@/pages/CatalogPage'
 import CartPage from '@/components/CartPage/CartPage'
-import DesignSystemPreview from '@/pages/DesignSystemPreview'
+import CartBadge from '@/components/CartBadge/CartBadge'
 
 function App() {
   const cart = useCart()
@@ -16,12 +16,9 @@ function App() {
             <p className="text-ink-500">Вітрина товарів ручної роботи</p>
           </div>
         </div>
-        <div className="rounded-control border border-ink-300/30 bg-surface px-4 py-2 text-sm shadow-sm">
-          У кошику: <strong>{cart.totalCount}</strong>
-        </div>
+        
+        <CartBadge totalCount={cart.totalCount} />
       </header>
-
-      <DesignSystemPreview />
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_340px] items-start">
         <div>

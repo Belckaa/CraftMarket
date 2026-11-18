@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import ProductCard from '../ProductCard/ProductCard'
 
-function ProductList({ products, onAddToCart }) {
+function ProductList({ products, onAddToCart, onOpenDetails }) {
   if (products.length === 0) {
     return (
       <div className="mt-8 rounded-control border border-dashed border-ink-300 bg-surface px-6 py-16 text-center shadow-sm">
@@ -18,6 +18,7 @@ function ProductList({ products, onAddToCart }) {
           <ProductCard
             {...product}
             onAddToCart={() => onAddToCart(product)}
+            onOpenDetails={() => onOpenDetails(product)}
           />
         </li>
       ))}
@@ -28,6 +29,7 @@ function ProductList({ products, onAddToCart }) {
 ProductList.propTypes = {
   products: PropTypes.array.isRequired,
   onAddToCart: PropTypes.func.isRequired,
+  onOpenDetails: PropTypes.func.isRequired,
 }
 
 export default ProductList
