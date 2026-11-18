@@ -1,61 +1,79 @@
+import PropTypes from 'prop-types'
 import CartItem from '../CartItem/CartItem'
 import PromoForm from '../PromoForm/PromoForm'
-import { useCartContext } from '@/context/useCartContext'
-import { useFormatPrice } from '@/utils/formatPrice'
+import { formatPrice } from '@/utils/formatPrice'
 
-export default function CartPage() {
-  const { items, totalCount, totalPrice, discountAmount, finalPrice, promo, promoError, updateQuantity, removeItem, clearCart, applyPromo } = useCartContext()
-  const formatPrice = useFormatPrice()
+export default function CartPage({ cart }) {
+  const { 
+    items, totalCount, totalPrice, discountAmount, finalPrice, 
+    promo, promoError, updateQuantity, removeItem, clearCart, applyPromo 
+  } = cart
 
   if (items.length === 0) {
     return (
-      <section className="sticky top-6 rounded-card border border-line bg-white p-6 shadow-sm">
-        <h2 className="mb-4 border-b border-line pb-4 text-xl font-bold text-ink">Кошик</h2>
-        <p className="py-10 text-center text-sm text-ink-muted">У кошику поки немає товарів.</p>
+      <section className="cart-panel">
+        <h2 className="cart-panel__title">Кошик</h2>
+        <p className="cart-panel__empty">У кошику поки немає товарів.</p>
       </section>
     )
   }
 
   return (
-    <section className="sticky top-6 rounded-card border border-line bg-white p-6 shadow-sm">
-      <h2 className="mb-4 border-b border-line pb-4 text-xl font-bold text-ink">Кошик ({totalCount})</h2>
-      
-      <ul className="max-h-[400px] overflow-y-auto mb-4 p-0">
+    <section className="cart-panel">
+      <h2 className="cart-panel__title">Кошик ({totalCount})</h2>
+      <ul className="cart-panel__list">
         {items.map((item) => (
           <CartItem key={item.id} item={item} onQuantityChange={updateQuantity} onRemove={removeItem} />
         ))}
       </ul>
 
-      <div className="border-t border-line pt-4">
+      <div className="cart-panel__summary">
         {!promo ? (
           <PromoForm onApply={applyPromo} error={promoError} />
         ) : (
-          <div className="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700 border border-green-200">
+          <div className="cart-panel__promo-applied">
             Промокод <strong>{promo}</strong> застосовано
           </div>
         )}
 
-        <div className="flex justify-between text-sm text-ink-muted mb-2">
+        <div className="cart-panel__row">
           <span>Сума:</span>
           <span>{formatPrice(totalPrice)}</span>
         </div>
         
         {discountAmount > 0 && (
-          <div className="flex justify-between text-sm text-green-600 font-medium mb-2">
+          <div className="cart-panel__row cart-panel__row--discount">
             <span>Знижка (10%):</span>
             <span>-{formatPrice(discountAmount)}</span>
           </div>
         )}
 
-        <div className="flex justify-between items-center text-lg font-bold text-ink mt-3 border-t border-dashed border-line pt-3">
+        <div className="cart-panel__row cart-panel__row--total">
           <span>До сплати:</span>
           <strong>{formatPrice(finalPrice)}</strong>
         </div>
 
-        <button type="button" className="mt-4 w-full rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100" onClick={clearCart}>
+        {/* Варіант 1: Кнопка очищення */}
+        <button type="button" className="cart-panel__clear" onClick={clearCart}>
           Очистити кошик
         </button>
       </div>
     </section>
   )
+}
+
+CartPage.propTypes = {
+  cart: PropTypes.shape({
+    items: PropTypes.array.isRequired,
+    totalCount: PropTypes.number.isRequired,
+    totalPrice: PropTypes.number.isRequired,
+    discountAmount: PropTypes.number.isRequired,
+    finalPrice: PropTypes.number.isRequired,
+    promo: PropTypes.string,
+    promoError: PropTypes.string,
+    updateQuantity: PropTypes.func.isRequired,
+    removeItem: PropTypes.func.isRequired,
+    clearCart: PropTypes.func.isRequired,
+    applyPromo: PropTypes.func.isRequired,
+  }).isRequired,
 }

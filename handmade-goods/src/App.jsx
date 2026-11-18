@@ -22,15 +22,14 @@ function App() {
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1fr_340px] items-start">
         <div>
-          <CatalogPage onAddToCart={cart.addItem} />
+          <CatalogPage />
         </div>
         <aside className="sticky top-8">
           <CartPage cart={cart} />
         </aside>
       </div>
 
-      {/* Панель тепер відображається завжди для перевірки */}
-      <DevMockPanel />
+      {import.meta.env.DEV && <DevMockPanel />}
     </main>
   )
 }

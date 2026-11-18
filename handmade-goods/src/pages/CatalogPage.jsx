@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react'
-import PropTypes from 'prop-types'
 import SearchPanel from '../components/SearchPanel/SearchPanel'
 import ProductList from '../components/ProductList/ProductList'
 import ProductModal from '../components/ProductModal/ProductModal'
@@ -12,7 +11,7 @@ import { Toast, Loader } from '@/components/ui'
 import ErrorMessage from '../components/ErrorMessage/ErrorMessage'
 import DevMockPanel from '../components/DevMockPanel' // <--- Імпорт панелі
 
-function CatalogPage({ onAddToCart }) {
+function CatalogPage() {
   const { status, products, error, isRefetching, retry } = useProducts()
   
   const [searchQuery, setSearchQuery] = useState('')
@@ -103,7 +102,7 @@ function CatalogPage({ onAddToCart }) {
             <>
               <ProductList 
                 products={filteredAndSortedProducts} 
-                onAddToCart={onAddToCart} 
+                 
                 onOpenDetails={setSelectedProduct} 
               />
               <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
@@ -132,5 +131,5 @@ function CatalogPage({ onAddToCart }) {
   )
 }
 
-CatalogPage.propTypes = { onAddToCart: PropTypes.func.isRequired }
+
 export default CatalogPage
