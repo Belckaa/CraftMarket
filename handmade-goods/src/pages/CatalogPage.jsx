@@ -1,83 +1,100 @@
-import { useState, useEffect } from 'react'
-import CategoryList from '@/components/CategoryCard/CategoryList'
-import FilterSidebar from '@/components/FilterSidebar/FilterSidebar'
-import ProductList from '@/components/ProductList/ProductList'
-import ReviewForm from '@/components/ReviewForm/ReviewForm'
+import { useState, useEffect, useMemo } from 'react'
+import PropTypes from 'prop-types'
+import SearchPanel from '../components/SearchPanel/SearchPanel'
+import ProductList from '../components/ProductList/ProductList'
 
-export default function CatalogPage() {
-  const [products, setProducts] = useState([])
-  const [status, setStatus] = useState('loading')
-  
-  // Стани фільтрів
-  const [query, setQuery] = useState('')
+function CatalogPage({ onAddToCart }) {
+  const [searchQuery, setSearchQuery] = useState('')
   const [category, setCategory] = useState('all')
-  const [sorting, setSorting] = useState('default')
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [minPrice, setMinPrice] = useState('')
+  const [maxPrice, setMaxPrice] = useState('')
+  const [sortBy, setSortBy] = useState('default')
+
+  const [products, setProducts] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
-    fetch('/api/products')
-      .then((res) => {
-        if (!res.ok) throw new Error('HTTP error')
-        return res.json()
-      })
-      .then((data) => { setProducts(data); setStatus('success') })
-      .catch(() => setStatus('error'))
-  }, [])
+    let isActive = true
+    async function loadProducts() {
+      setIsLoading(true)
+      setError(null)
+      try {
+        const response = await fetch(`/api/products${window.location.search}`)
+        if (!response.ok) throw new Error(`Сервер повернув статус ${response.status}`)
+        const data = await response.json()
+        if (isActive) setProducts(data)
+      } catch (err) {
+        if (isActive) setError(err.message)
+      } finally {
+        if (isActive) setIsLoading(false)
+      }
+    }
+    loadProducts()
+    return () => { isActive = false }
+  }, [retryCount])
 
-  if (status === 'loading') return <p className="mt-8 text-ink-muted">Завантаження каталогу…</p>
-  if (status === 'error') return <p className="mt-8 rounded-card border border-red-200 bg-red-50 px-4 py-3 text-red-700">Не вдалося завантажити каталог.</p>
+  const filteredAndSortedProducts = useMemo(() => {
+    let result = products.filter((product) => {
+      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesCategory = category === 'all' || product.category === category
+      let matchesPrice = true
+      if (minPrice !== '' || maxPrice !== '') {
+        const min = minPrice === '' ? 0 : Number(minPrice)
+        const max = maxPrice === '' ? Infinity : Number(maxPrice)
+        const actualMin = Math.min(min, max)
+        const actualMax = Math.max(min, max)
+        matchesPrice = product.price >= actualMin && product.price <= actualMax
+      }
+      return matchesSearch && matchesCategory && matchesPrice
+    })
 
-  // Логіка фільтрації
-  let visible = products.filter((p) => {
-    const matchQuery = p.name.toLowerCase().includes(query.trim().toLowerCase())
-    const matchCategory = category === 'all' || p.category === category
-    return matchQuery && matchCategory
-  })
+    if (sortBy === 'name-asc') result.sort((a, b) => a.name.localeCompare(b.name, 'uk'))
+    else if (sortBy === 'price-asc') result.sort((a, b) => a.price - b.price || a.name.localeCompare(b.name, 'uk'))
+    else if (sortBy === 'price-desc') result.sort((a, b) => b.price - a.price || a.name.localeCompare(b.name, 'uk'))
 
-  // Логіка сортування
-  if (sorting === 'price-asc') visible.sort((a, b) => a.price - b.price)
-  if (sorting === 'price-desc') visible.sort((a, b) => b.price - a.price)
+    return result.map(p => ({ ...p, highlightQuery: searchQuery }))
+  }, [products, searchQuery, category, minPrice, maxPrice, sortBy])
+
+  const handleRetry = () => setRetryCount(prev => prev + 1)
 
   return (
-    <>
-      <h2 className="text-2xl font-bold text-ink mb-6">Каталог товарів</h2>
-      
-      {/* Категорії (Варіант 1, 6) */}
-      <CategoryList onCategoryClick={setCategory} />
+    <div className="flex flex-col w-full">
+      <SearchPanel
+        searchQuery={searchQuery} onSearchChange={setSearchQuery}
+        category={category} onCategoryChange={setCategory}
+        minPrice={minPrice} onMinPriceChange={setMinPrice}
+        maxPrice={maxPrice} onMaxPriceChange={setMaxPrice}
+        sortBy={sortBy} onSortChange={setSortBy}
+      />
 
-      {/* Панель керування (мобільна кнопка) */}
-      <div className="flex items-center justify-between mb-6">
-        <button 
-          onClick={() => setIsFilterOpen(true)}
-          className="lg:hidden inline-flex items-center gap-2 rounded-lg border border-line bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm"
-        >
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-          Фільтри
-        </button>
-        <p className="text-sm text-ink-muted">
-          Знайдено: <span className="font-semibold text-ink">{visible.length}</span>
-        </p>
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-ink-900">Каталог товарів</h2>
+        {!isLoading && !error && (
+          <p className="text-ink-500 font-medium">Знайдено товарів: {filteredAndSortedProducts.length}</p>
+        )}
       </div>
 
-      {/* Двоколонкова структура з фільтрами */}
-      <div className="flex items-start gap-6">
-        <FilterSidebar 
-          isOpen={isFilterOpen} 
-          onClose={() => setIsFilterOpen(false)} 
-          query={query} setQuery={setQuery}
-          category={category} setCategory={setCategory}
-          sorting={sorting} setSorting={setSorting}
-        />
-
-        <div className="flex-1 min-w-0">
-          <ProductList products={visible} />
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20 text-ink-500">
+          <div className="mb-4 h-10 w-10 animate-spin rounded-full border-4 border-ink-100 border-t-brand-600"></div>
+          <p>Завантаження каталогу...</p>
         </div>
-      </div>
-
-      {/* Форма відгуку (залишилась з ЛР6/9) */}
-      <div className="mt-12 border-t border-line pt-8">
-        <ReviewForm productName="Гончарна ваза «Лаванда»" />
-      </div>
-    </>
+      ) : error ? (
+        <div className="rounded-control border border-danger-600 bg-danger-100 p-8 text-center text-danger-600" role="alert">
+          <p className="mb-4 font-semibold">Не вдалося завантажити каталог: {error}</p>
+          <button onClick={handleRetry} className="rounded-control bg-danger-600 px-4 py-2 font-semibold text-white transition-opacity hover:opacity-80">
+            Спробувати ще раз
+          </button>
+        </div>
+      ) : (
+        <ProductList products={filteredAndSortedProducts} onAddToCart={onAddToCart} />
+      )}
+    </div>
   )
 }
+
+CatalogPage.propTypes = { onAddToCart: PropTypes.func.isRequired }
+
+export default CatalogPage

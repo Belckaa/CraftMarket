@@ -12,7 +12,7 @@ function ProductList({ products, onAddToCart }) {
   }
 
   return (
-    <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6 list-none p-0 w-full">
+    <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3 lg:gap-6 list-none p-0 w-full">
       {products.map((product) => (
         <li key={product.id} className="flex h-full">
           <ProductCard
