@@ -1,30 +1,11 @@
 @import "tailwindcss";
-
-@theme {
-  /* Токени перефарбовані під стиль ЛР8: сучасний синьо-сірий фон і зелений акцент */
-  --color-clay-50: #f0fdf4;
-  --color-clay-100: #dcfce7;
-  --color-clay-600: #10b981; /* Emerald 500 */
-  --color-clay-700: #059669; /* Emerald 600 */
-  --color-ink: #0f172a; /* Slate 900 */
-  --color-ink-muted: #64748b; /* Slate 500 */
-  --color-paper: #f8fafc; /* Slate 50 - фон сторінки */
-  --color-line: #e2e8f0; /* Slate 200 - межі */
-  --color-edge: #cbd5e1; /* Slate 300 - межі інпутів */
-
-  /* Повертаємо сучасний шрифт без засічок замість Georgia */
-  --font-display: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-
-  --radius-card: 0.75rem;
-  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --shadow-lift: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
-}
+@import "./styles/tokens.css";
 
 @layer base {
   body {
     background-color: var(--color-paper);
-    color: var(--color-ink);
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
 }

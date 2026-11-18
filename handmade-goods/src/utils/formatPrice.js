@@ -1,25 +1,20 @@
-import { useCurrencyContext } from '../context/useCurrencyContext'
+import { useCallback } from "react";
 
-export function useFormatPrice() {
-  const { currency, rates } = useCurrencyContext()
-
-  return (valueInUah) => {
-    const rate = rates[currency]
-
-    if (rate === null || rate === undefined) {
-      const uahFormatter = new Intl.NumberFormat('uk-UA', {
-        style: 'currency',
-        currency: 'UAH',
-        maximumFractionDigits: 0,
-      })
-      return `${uahFormatter.format(valueInUah)} (курс недоступний)`
-    }
-
-    const converted = valueInUah * rate
-    return new Intl.NumberFormat('uk-UA', {
-      style: 'currency',
-      currency: currency,
-      maximumFractionDigits: currency === 'UAH' ? 0 : 2,
-    }).format(converted)
-  }
+export function formatPrice(value) {
+  const number = Number(value) || 0;
+  return new Intl.NumberFormat("uk-UA", {
+    style: "currency",
+    currency: "UAH",
+    maximumFractionDigits: 0,
+  }).format(number);
 }
+
+/**
+ * Хук-обгортка: повертає стабільну функцію форматування.
+ * Використовується у CartPage та CartItem.
+ */
+export function useFormatPrice() {
+  return useCallback((value) => formatPrice(value), []);
+}
+
+export default formatPrice;

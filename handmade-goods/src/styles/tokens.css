@@ -1,0 +1,35 @@
+@theme {
+  --font-sans: Inter, system-ui, sans-serif;
+
+  /* Тло сторінки (FinTrack) */
+  --color-paper: #f4f7fe;
+  --color-surface: #ffffff;
+
+  /* Нейтральна шкала (FinTrack) */
+  --color-ink-100: #f1f5f9;
+  --color-ink-300: #cbd5e1;
+  --color-ink-500: #64748b; /* Затемнено для проходження контрасту меж */
+  --color-ink-600: #475569;
+  --color-ink-800: #1e293b;
+  --color-ink-900: #0f172a;
+
+  /* Акцент бренду (FinTrack accent) - затемнено для WCAG */
+  --color-brand-100: #ecfdf5;
+  --color-brand-600: #047857; /* Було #10b981 */
+  --color-brand-700: #065f46; /* Було #059669 */
+  --color-brand-800: #064e3b; /* Було #047857 */
+
+  /* Семантичні кольори - затемнено для WCAG */
+  --color-danger-100: #fef2f2;
+  --color-danger-600: #b91c1c; /* Було #ef4444 */
+  --color-danger-700: #991b1b; /* Було #b91c1c */
+
+  --color-success-100: #dcfce7;
+  --color-success-800: #166534;
+
+  --color-warning-100: #fef3c7;
+  --color-warning-900: #78350f;
+
+  /* Форма елементів керування */
+  --radius-control: 10px;
+}

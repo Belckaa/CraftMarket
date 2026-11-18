@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check:cart": "node scripts/check-cart-reducer.mjs"
+    "check:cart": "node scripts/check-cart-reducer.mjs",
+    "check:contrast": "node scripts/check-contrast.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.6",
