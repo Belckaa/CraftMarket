@@ -19,6 +19,7 @@ export async function loginRequest({ email, password }) {
 export async function authFetch(url, options = {}) {
   const token = localStorage.getItem(TOKEN_KEY)
   const headers = {
+    Accept: 'application/json',
     ...options.headers,
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   }
