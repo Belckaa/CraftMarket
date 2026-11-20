@@ -1,69 +1,53 @@
-import { NavLink, Outlet, useNavigation } from 'react-router'
-import { useCartContext as useCart } from '@/context/useCartContext'
+import { Link, NavLink, Outlet } from 'react-router'
+import { useAuth } from '@/store/authStore'
+import { useCart } from '@/hooks/useCart'
 import CartBadge from '@/components/CartBadge/CartBadge'
 
-// Slug-и мають збігатися зі значеннями поля category у мок-даних
-const CATEGORY_LINKS = [
-  { slug: 'ceramics', title: 'Кераміка' },
-  { slug: 'textile', title: 'Текстиль' },
-  { slug: 'wood', title: 'Дерево' },
-]
-
-const navLinkClass = ({ isActive }) => {
-  const base = 'rounded-control px-3 py-2 text-sm font-medium transition-colors'
-  const state = isActive
-    ? 'bg-brand-100 text-brand-800'
-    : 'text-ink-700 hover:bg-ink-100'
-  return `${base} ${state}`
-}
-
 export default function RootLayout() {
+  const { isAuthenticated, user, logout } = useAuth()
   const cart = useCart()
-  const navigation = useNavigation()
-  const isNavigating = navigation.state === 'loading'
+
+  // Варіант 7: обрізання імені
+  const rawName = user?.displayName || user?.email || ''
+  const shortName = rawName.length > 20 ? `${rawName.slice(0, 20)}...` : rawName
 
   return (
-    <div className="flex min-h-screen flex-col bg-paper text-ink-900">
+    <div className="min-h-screen bg-paper">
       <header className="border-b border-ink-300/30 bg-surface">
-        <nav
-          aria-label="Головна навігація"
-          className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 py-3 sm:px-6 lg:px-8"
-        >
-          <span className="mr-2 grid h-10 w-10 place-items-center rounded-control bg-ink-900 text-sm font-bold text-surface">
-            CM
-          </span>
-          <NavLink to="/" end className={navLinkClass}>Каталог</NavLink>
-          {CATEGORY_LINKS.map(({ slug, title }) => (
-            <NavLink key={slug} to={`/category/${slug}`} className={navLinkClass}>
-              {title}
-            </NavLink>
-          ))}
-          <NavLink to="/profile/1" className={navLinkClass}>Профіль</NavLink>
-          <NavLink
-            to="/cart"
-            className={(state) => `${navLinkClass(state)} ml-auto`}
-          >
-            <span className="inline-flex items-center gap-2">
-              Кошик <CartBadge totalCount={cart.totalCount} />
-            </span>
-          </NavLink>
-        </nav>
-        {isNavigating && (
-          <div
-            role="progressbar"
-            aria-label="Завантаження сторінки"
-            className="h-1 w-full animate-pulse bg-brand-600"
-          />
-        )}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <Link to="/" className="flex items-center gap-2">
+              <span className="grid h-10 w-10 place-items-center rounded-control bg-ink-900 font-bold text-surface">CM</span>
+              <span className="text-xl font-bold text-ink-900">CraftMarket</span>
+            </Link>
+            <nav className="hidden md:flex items-center gap-4">
+              <NavLink to="/" className="text-ink-600 hover:text-ink-900 font-medium">Каталог</NavLink>
+            </nav>
+          </div>
+          
+          <div className="flex items-center gap-6">
+            <CartBadge totalCount={cart.totalCount} />
+            {isAuthenticated ? (
+              <div className="flex items-center gap-4">
+                <NavLink to="/orders" className="text-ink-600 hover:text-ink-900 font-medium">Мої замовлення</NavLink>
+                <span 
+                  className="text-sm text-ink-500" 
+                  title={rawName.length > 20 ? rawName : undefined}
+                  aria-label={`Вітаємо, ${rawName}`}
+                >
+                  Вітаємо, {shortName}
+                </span>
+                <button onClick={logout} className="text-sm text-danger-600 font-medium hover:underline">Вийти</button>
+              </div>
+            ) : (
+              <NavLink to="/login" className="rounded-control bg-brand-600 px-4 py-2 text-white font-medium hover:bg-brand-700">Увійти</NavLink>
+            )}
+          </div>
+        </div>
       </header>
-
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8">
+      <main>
         <Outlet />
       </main>
-
-      <footer className="border-t border-ink-300/30 py-4 text-center text-sm text-ink-500">
-        CraftMarket · вітрина виробів ручної роботи
-      </footer>
     </div>
   )
 }

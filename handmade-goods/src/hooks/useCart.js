@@ -7,7 +7,7 @@ export function useCart() {
   const addItem = useShopStore((s) => s.addItem)
   const updateQuantity = useShopStore((s) => s.updateQuantity)
   const removeItem = useShopStore((s) => s.removeItem)
-  const clearCart = useShopStore((s) => s.clearCart) // Варіант 1
+  const clearCart = useShopStore((s) => s.clearCart)
 
   return { items, totalCount, totalPrice, addItem, updateQuantity, removeItem, clearCart }
 }

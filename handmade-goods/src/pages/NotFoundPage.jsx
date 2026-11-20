@@ -1,15 +1,11 @@
 import { Link } from 'react-router'
 
-const homeLinkClass =
-  'mt-6 inline-block rounded-control bg-brand-600 px-4 py-2 font-semibold text-white hover:bg-brand-700'
-
 export default function NotFoundPage() {
   return (
-    <section className="py-16 text-center">
-      <title>404: сторінку не знайдено | CraftMarket</title>
-      <h1 className="text-3xl font-semibold text-ink-900">404: сторінку не знайдено</h1>
-      <p className="mt-2 text-ink-600">Адреса неправильна або сторінку було видалено.</p>
-      <Link to="/" className={homeLinkClass}>Повернутися до каталогу</Link>
-    </section>
+    <div className="flex flex-col items-center justify-center py-20">
+      <h1 className="text-4xl font-bold text-ink-900 mb-4">404</h1>
+      <p className="text-ink-500 mb-6">Сторінку не знайдено</p>
+      <Link to="/" className="text-brand-600 hover:underline">Повернутися до каталогу</Link>
+    </div>
   )
 }

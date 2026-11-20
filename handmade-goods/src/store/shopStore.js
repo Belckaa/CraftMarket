@@ -1,51 +1,68 @@
 import { create } from 'zustand'
+import { useAuthStore } from './authStore'
 
-export const useShopStore = create((set) => ({
-  // --- Стан кошика ---
+const getCartKey = () => {
+  const userId = useAuthStore.getState().user?.id
+  return userId ? `cart:${userId}` : null
+}
+
+export const useShopStore = create((set, get) => ({
   items: [],
   
+  loadCart: () => {
+    const key = getCartKey()
+    if (!key) return set({ items: [] })
+    try {
+      const saved = localStorage.getItem(key)
+      set({ items: saved ? JSON.parse(saved) : [] })
+    } catch {
+      set({ items: [] })
+    }
+  },
+
+  saveCart: () => {
+    const key = getCartKey()
+    if (key) {
+      localStorage.setItem(key, JSON.stringify(get().items))
+    }
+  },
+
   addItem: (product) => set((state) => {
     const existing = state.items.find((item) => item.id === product.id)
-    if (existing) {
-      const newQty = Math.min(10, existing.quantity + 1) // Варіант 6: ліміт 10
-      return {
-        items: state.items.map((item) =>
-          item.id === product.id ? { ...item, quantity: newQty } : item
-        ),
-      }
-    }
-    return {
-      items: [...state.items, { id: product.id, name: product.name, price: product.price, image: product.image, quantity: 1 }],
-    }
+    const newItems = existing 
+      ? state.items.map((item) => item.id === product.id ? { ...item, quantity: Math.min(10, item.quantity + 1) } : item)
+      : [...state.items, { id: product.id, name: product.name, price: product.price, image: product.image, quantity: 1 }]
+    get().saveCart()
+    return { items: newItems }
   }),
 
   updateQuantity: (id, quantity) => set((state) => {
-    // Варіант 6: обробка нецілих та NaN-значень
     let qty = Number(quantity)
     if (isNaN(qty)) qty = 1
     qty = Math.floor(qty)
-    qty = Math.max(0, Math.min(10, qty)) // Обмеження 0-10
-
-    if (qty === 0) {
-      return { items: state.items.filter((item) => item.id !== id) }
-    }
-    return {
-      items: state.items.map((item) => (item.id === id ? { ...item, quantity: qty } : item)),
-    }
+    qty = Math.max(0, Math.min(10, qty))
+    const newItems = qty === 0 
+      ? state.items.filter((item) => item.id !== id)
+      : state.items.map((item) => (item.id === id ? { ...item, quantity: qty } : item))
+    get().saveCart()
+    return { items: newItems }
   }),
 
-  removeItem: (id) => set((state) => ({
-    items: state.items.filter((item) => item.id !== id),
-  })),
+  removeItem: (id) => set((state) => {
+    const newItems = state.items.filter((item) => item.id !== id)
+    get().saveCart()
+    return { items: newItems }
+  }),
 
-  // Варіант 1: Очищення кошика
-  clearCart: () => set({ items: [] }),
+  clearCart: () => set(() => {
+    get().saveCart()
+    return { items: [] }
+  }),
 
-  // --- Стан каталогу (Варіант 11) ---
+  // Catalog state
   products: [],
-  status: 'idle', // idle | loading | success | error
+  status: 'idle',
   error: null,
-  
   fetchProducts: async () => {
     set({ status: 'loading', error: null })
     try {
@@ -60,7 +77,6 @@ export const useShopStore = create((set) => ({
   },
 }))
 
-// Селектори (для оптимізації рендерів)
 export const selectTotalCount = (state) => state.items.reduce((sum, item) => sum + item.quantity, 0)
 export const selectTotalPrice = (state) => state.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
 export const selectItems = (state) => state.items
